@@ -1,0 +1,6 @@
+C:\Users\dj\Documents\GitHub\hr\tutorials\t1 - arrays left rotation\project\ConsoleApp\t1\t1\bin\Debug\t1.exe.config
+C:\Users\dj\Documents\GitHub\hr\tutorials\t1 - arrays left rotation\project\ConsoleApp\t1\t1\bin\Debug\t1.exe
+C:\Users\dj\Documents\GitHub\hr\tutorials\t1 - arrays left rotation\project\ConsoleApp\t1\t1\bin\Debug\t1.pdb
+C:\Users\dj\Documents\GitHub\hr\tutorials\t1 - arrays left rotation\project\ConsoleApp\t1\t1\obj\Debug\t1.csprojResolveAssemblyReference.cache
+C:\Users\dj\Documents\GitHub\hr\tutorials\t1 - arrays left rotation\project\ConsoleApp\t1\t1\obj\Debug\t1.exe
+C:\Users\dj\Documents\GitHub\hr\tutorials\t1 - arrays left rotation\project\ConsoleApp\t1\t1\obj\Debug\t1.pdb
