@@ -8,6 +8,7 @@ dotnet new sln
 md prj
 pushd prj
 dotnet new classlib
+copy ..\..\..\simple.cs Class1.cs
 popd
 dotnet sln add prj\prj.csproj
 
@@ -55,4 +56,6 @@ dotnet restore
 dotnet build
 
 dotnet run -p lib.Nunit\lib.Nunit.csproj
+popd
+popd
 
