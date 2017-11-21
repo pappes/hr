@@ -1,0 +1,8 @@
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\prj\bin\Debug\netstandard2.0\prj.deps.json
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\prj\bin\Debug\netstandard2.0\prj.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\prj\bin\Debug\netstandard2.0\prj.pdb
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\prj\obj\Debug\netstandard2.0\prj.csproj.CoreCompileInputs.cache
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\prj\obj\Debug\netstandard2.0\prj.AssemblyInfoInputs.cache
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\prj\obj\Debug\netstandard2.0\prj.AssemblyInfo.cs
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\prj\obj\Debug\netstandard2.0\prj.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\prj\obj\Debug\netstandard2.0\prj.pdb

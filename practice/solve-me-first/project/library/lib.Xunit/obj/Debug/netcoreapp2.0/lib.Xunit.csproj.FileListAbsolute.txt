@@ -1,0 +1,15 @@
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\bin\Debug\netcoreapp2.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\bin\Debug\netcoreapp2.0\xunit.runner.utility.netstandard15.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\bin\Debug\netcoreapp2.0\xunit.runner.reporters.netstandard15.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\bin\Debug\netcoreapp2.0\lib.Xunit.deps.json
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\bin\Debug\netcoreapp2.0\lib.Xunit.runtimeconfig.json
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\bin\Debug\netcoreapp2.0\lib.Xunit.runtimeconfig.dev.json
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\bin\Debug\netcoreapp2.0\lib.Xunit.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\bin\Debug\netcoreapp2.0\lib.Xunit.pdb
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\bin\Debug\netcoreapp2.0\prj.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\bin\Debug\netcoreapp2.0\prj.pdb
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\obj\Debug\netcoreapp2.0\lib.Xunit.csproj.CoreCompileInputs.cache
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\obj\Debug\netcoreapp2.0\lib.Xunit.AssemblyInfoInputs.cache
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\obj\Debug\netcoreapp2.0\lib.Xunit.AssemblyInfo.cs
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\obj\Debug\netcoreapp2.0\lib.Xunit.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.Xunit\obj\Debug\netcoreapp2.0\lib.Xunit.pdb

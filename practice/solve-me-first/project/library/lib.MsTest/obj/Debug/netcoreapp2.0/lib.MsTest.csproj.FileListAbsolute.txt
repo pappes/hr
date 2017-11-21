@@ -1,0 +1,15 @@
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\bin\Debug\netcoreapp2.0\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\bin\Debug\netcoreapp2.0\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\bin\Debug\netcoreapp2.0\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\bin\Debug\netcoreapp2.0\lib.MsTest.deps.json
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\bin\Debug\netcoreapp2.0\lib.MsTest.runtimeconfig.json
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\bin\Debug\netcoreapp2.0\lib.MsTest.runtimeconfig.dev.json
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\bin\Debug\netcoreapp2.0\lib.MsTest.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\bin\Debug\netcoreapp2.0\lib.MsTest.pdb
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\bin\Debug\netcoreapp2.0\prj.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\bin\Debug\netcoreapp2.0\prj.pdb
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\obj\Debug\netcoreapp2.0\lib.MsTest.csproj.CoreCompileInputs.cache
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\obj\Debug\netcoreapp2.0\lib.MsTest.AssemblyInfoInputs.cache
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\obj\Debug\netcoreapp2.0\lib.MsTest.AssemblyInfo.cs
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\obj\Debug\netcoreapp2.0\lib.MsTest.dll
+C:\Users\dj\Documents\GitHub\hr\practice\solve-me-first\project\library\lib.MsTest\obj\Debug\netcoreapp2.0\lib.MsTest.pdb

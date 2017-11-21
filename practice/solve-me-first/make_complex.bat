@@ -1,4 +1,3 @@
-make_complex.bat
 rem create library project containg the required source
 rem based on instructions from http://asp.net-hacker.rocks/2017/03/31/unit-testing-with-dotnetcore.html
 md project
