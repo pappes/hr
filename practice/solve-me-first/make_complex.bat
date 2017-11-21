@@ -1,5 +1,6 @@
 rem create library project containg the required source
 rem based on instructions from http://asp.net-hacker.rocks/2017/03/31/unit-testing-with-dotnetcore.html
+rem more info https://xunit.github.io/docs/comparisons.html
 md project
 pushd project
 md library
