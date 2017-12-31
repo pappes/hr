@@ -69,7 +69,7 @@ REM         dotnet run -p lib.Nunit\lib.Nunit.csproj
         dotnet restore
         dotnet build
 
-        dotnet test lib.Nunit2\lib.Nunit2.csproj
+        dotnet test lib.Nunit\lib.Nunit.csproj
     popd
 popd
 
