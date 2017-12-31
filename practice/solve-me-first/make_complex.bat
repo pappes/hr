@@ -43,20 +43,33 @@ pushd project
 
         dotnet test lib.MsTest\lib.MsTest.csproj
 
+REM 
+REM         rem create Nunit project as an executable console app and reference the library project
+REM         md lib.Nunit
+REM         pushd lib.Nunit
+REM             dotnet new console
+REM             dotnet add package Nunit
+REM             dotnet add package NUnitLite
+REM             dotnet add reference ..\prj\prj.csproj
+REM         popd
+REM 
+REM         dotnet restore
+REM         dotnet build
+REM 
+REM         dotnet run -p lib.Nunit\lib.Nunit.csproj
 
-        rem create Nunit project as an executable console app and reference the library project
+        rem create Nunit project (Rob Prouse) https://github.com/nunit/docs/wiki/.NET-Core-and-.NET-Standard
         md lib.Nunit
         pushd lib.Nunit
-            dotnet new console
-            dotnet add package Nunit
-            dotnet add package NUnitLite
+            dotnet new -i NUnit3.DotNetNew.Template 
+            dotnet new nunit
             dotnet add reference ..\prj\prj.csproj
         popd
 
         dotnet restore
         dotnet build
 
-        dotnet run -p lib.Nunit\lib.Nunit.csproj
+        dotnet test lib.Nunit2\lib.Nunit2.csproj
     popd
 popd
 
