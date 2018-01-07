@@ -2,16 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-class Solution {
+public class Solution {
 
 //https://www.hackerrank.com/challenges/simple-array-sum/problem
+    public static int TestHarness(int a, int[] b)
+    {
+        // call actual logic 
+        return simpleArraySum(a, b);
+    }
+
     static int simpleArraySum(int n, int[] ar) {
         // Complete this function
-        int result = 0;
+        long result = 0;
         for (int element = 0; element < n; element++) {
-            result+=ar[element];
+            result+=Convert.ToInt64(ar[element]);
         }
-        return result;
+        return Convert.ToInt32(result);
     }
 
     static void Main(String[] args) {

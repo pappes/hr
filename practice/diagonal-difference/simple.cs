@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 //using Math;
-class Solution {
+public class Solution {
 //https://www.hackerrank.com/challenges/diagonal-difference/problem
+    public static int TestHarness(int size, int[][] matrix)
+    {
+        // call actual logic 
+        return CompareAxis(size,matrix);;
+    }
     static int CompareAxis (int size, int[][] matrix) {
         long forwardslash=0;
         long backslash=0;

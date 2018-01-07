@@ -2,8 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-class Solution {
+public class Solution {
 //https://www.hackerrank.com/challenges/compare-the-triplets/problem
+    public static int[] TestHarness(int a0, int a1, int a2, int b0, int b1, int b2)
+    {
+        // call actual logic 
+        return solve(a0, a1, a2, b0, b1, b2);;
+    }
 
     static int[] solve(int a0, int a1, int a2, int b0, int b1, int b2){
         int[] results = {0,0};
