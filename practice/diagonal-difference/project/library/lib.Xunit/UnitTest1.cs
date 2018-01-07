@@ -55,5 +55,14 @@ namespace lib.Xunit
             bigArray[0][0] = 0;
             Assert.Equal(Int32.MaxValue, Solution.TestHarness(maxArray, bigArray));//top left corner = 0 makes backslash (Int32.MaxValue) less than forward slash
         }
+        [Fact]
+        public void TestDiaginalDiff1millionx1million()
+        {
+            int maxArray = 10000;
+            int[][] bigArray = createArray(maxArray, Int32.MaxValue);//large array with large values
+            Assert.Equal(0, Solution.TestHarness(maxArray, bigArray));
+            bigArray[0][0] = 0;
+            Assert.Equal(Int32.MaxValue, Solution.TestHarness(maxArray, bigArray));//top left corner = 0 makes backslash (Int32.MaxValue) less than forward slash
+        }
     }
 }
