@@ -26,5 +26,7 @@ REM         copy ..\..\..\simple.cs Class1.cs
     dotnet build
 
     dotnet test lib.Xunit\lib.Xunit.csproj
-popd
 
+    code prj\Class1.cs
+    code lib.Xunit\UnitTest1.cs
+popd
