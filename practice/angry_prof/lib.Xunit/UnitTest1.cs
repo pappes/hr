@@ -7,16 +7,47 @@ namespace lib.Xunit
     public class UnitTestTheories
     {
         [Theory]
-        [InlineData("", 1, new string[] {"", "", ""})]
-        public void TestProff(string expectedResult, int testCount, string[] testData)
+        [InlineData("yes", "1\r\n1 1\r\n0")]
+
+
+        public void TestProff(string expectedResult, string testData)
         {
-            Stream inputData;
-            Stream outputData;
-            //Solution.TestHarness((new StreamReader(inputData), new StreamWriter(outputData));
-            string actualResult= "no";
+            //build streams to simulate stdin and stdout
+            //that allows the test to control and monitor the data
+            string actualResult; 
+            using (Stream inputData = GenerateStreamFromString(testData))
+            {   
+                using (Stream outputDataStream = new MemoryStream())
+                {
+                    StreamWriter captureOutputData = new StreamWriter(outputDataStream);  
+                    StreamReader sendInputData     = new StreamReader(inputData);   
+                    Solution.TestHarness(sendInputData, captureOutputData);
+                    actualResult = ReadFromStreamWriter(captureOutputData, outputDataStream);
+                }
+            }
             Assert.Equal(expectedResult, actualResult);
         }
+
+        //helper method from https://stackoverflow.com/questions/1879395/how-do-i-generate-a-stream-from-a-string
+        static Stream GenerateStreamFromString(string s)
+        {
+            MemoryStream stream = new MemoryStream();
+            StreamWriter writer = new StreamWriter(stream);
+            writer.Write(s);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
+        }
+        
+        static string ReadFromStreamWriter(StreamWriter writer, Stream stream)
+        {
+            writer.Flush();
+            stream.Position = 0;
+            StreamReader reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
     }
+
     /*public class UnitTestFacts
     {
         public int[][] createArray(int x, int[] classSizes, int defaultValue)

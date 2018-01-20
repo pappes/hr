@@ -26,8 +26,11 @@ public class Solution {
         }
         string[] result = angryProfessor(tests, rules, arrivals);
         for(int a0 = 0; a0 < tests; a0++){
-            Console.destination(result[a0]);        
+            destination.WriteLine(result[a0]);        
         }*/
+            destination.WriteLine(tests); 
+            destination.WriteLine("no class for you");  
+            destination.WriteLine("no class today");  
     }
     static void Main(String[] args) {
         timeLine(new StreamReader(Console.OpenStandardInput(), Console.InputEncoding), 
