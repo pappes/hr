@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using Xunit;
 
 namespace lib.Xunit
@@ -8,6 +9,7 @@ namespace lib.Xunit
     {
         [Theory]
         [InlineData("NO", "1\r\n1 1\r\n0 0")]
+        [InlineData("NO", "1\r\n1 1\r\n0")]
         [InlineData("NO", "1\r\n10 5\r\n-4 -3 -2 -1 0 1 2 3 4 5 6")]
         [InlineData("NO", "1\r\n1 1\r\n0")]
         [InlineData("YES", "1\r\n10 5\r\n-3 -2 -1 0 1 2 3 4 5 6")]
@@ -22,28 +24,100 @@ NO",
 4 2
 0 -1 2 1")]
 
-
         public void TestProff(string expectedResult, string testData)
+        {
+            string actualResult = TestHelper.StreamDataToTestHarness(testData); 
+            Assert.Equal(expectedResult, actualResult);
+        }
+
+    }
+
+    public class UnitTestFacts
+    {
+        [Fact]
+        public void TestMaxClassOK()
+        {
+            string expectedResult = ""; 
+            char[] charsToTrim = {'\r', '\n', ' '};
+            int maxTests = 10;
+            int maxClass = 1000;
+            int threshold = maxClass;
+            StringBuilder testData = new StringBuilder("", maxTests*maxClass*2+maxTests*15);
+            testData.Append( $"{maxTests}\r\n");
+            for (int i=0; i< maxTests; i++){
+                testData.Append($"{maxClass} {threshold}\r\n");
+                for (int j=0; j<maxClass; j++){
+                    testData.Append( j<maxClass-1 ? "0 " : "0" );
+                }
+                testData.AppendLine();
+                expectedResult = expectedResult + "NO\r\n";
+            }
+            string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString());
+            Assert.Equal(expectedResult.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
+        }
+        public void TestMaxClassFail()
+        {
+            string expectedResult = ""; 
+            char[] charsToTrim = {'\r', '\n', ' '};
+            int maxTests = 10;
+            int maxClass = 1000;
+            int threshold = maxClass;
+            StringBuilder testData = new StringBuilder("", maxTests*maxClass*2+maxTests*15);
+            testData.Append( $"{maxTests}\r\n");
+            for (int i=0; i< maxTests; i++){
+                testData.Append($"{maxClass} {threshold}\r\n");
+                for (int j=0; j<maxClass; j++){
+                    testData.Append( j<maxClass-1 ? "0 " : "1" );
+                }
+                testData.AppendLine();
+                expectedResult = expectedResult + "YES\r\n";
+            }
+            string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString());
+            Assert.Equal(expectedResult.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
+        }
+        public void TestSuperLargeClass()
+        {
+            string expectedResult = ""; 
+            char[] charsToTrim = {'\r', '\n', ' '};
+            int maxTests = 100;
+            int maxClass = 10000;
+            int threshold = maxClass;
+            StringBuilder testData = new StringBuilder("", maxTests*maxClass*2+maxTests*15);
+            testData.Append( $"{maxTests}\r\n");
+            for (int i=0; i< maxTests; i++){
+                testData.Append($"{maxClass} {threshold}\r\n");
+                for (int j=0; j<maxClass; j++){
+                    testData.Append( j<maxClass-1 ? "0 " : "1" );
+                }
+                testData.AppendLine();
+                expectedResult = expectedResult + "YES\r\n";
+            }
+            string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString());
+            Assert.Equal(expectedResult.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
+        }
+    }
+    public class TestHelper
+    {
+        public static String StreamDataToTestHarness(string testData)
         {
             //build streams to simulate stdin and stdout
             //that allows the test to control and monitor the data
             string actualResult; 
-            using (Stream inputData = GenerateStreamFromString(testData))
+            using (Stream inputData = TestHelper.GenerateStreamFromString(testData))
             {   
                 using (Stream outputDataStream = new MemoryStream())
                 {
                     StreamWriter captureOutputData = new StreamWriter(outputDataStream);  
                     StreamReader sendInputData     = new StreamReader(inputData);   
                     Solution.TestHarness(sendInputData, captureOutputData);
-                    actualResult = ReadFromStreamWriter(captureOutputData, outputDataStream);
+                    actualResult = TestHelper.ReadFromStreamWriter(captureOutputData, outputDataStream);
                 }
             }
             char[] charsToTrim = {'\r', '\n', ' '};
-            Assert.Equal(expectedResult, actualResult.TrimEnd(charsToTrim));
+            return actualResult.TrimEnd(charsToTrim);
         }
-
         //helper method from https://stackoverflow.com/questions/1879395/how-do-i-generate-a-stream-from-a-string
-        static Stream GenerateStreamFromString(string s)
+        public static Stream GenerateStreamFromString(string s)
         {
             MemoryStream stream = new MemoryStream();
             StreamWriter writer = new StreamWriter(stream);
@@ -53,7 +127,7 @@ NO",
             return stream;
         }
         
-        static string ReadFromStreamWriter(StreamWriter writer, Stream stream)
+        public static string ReadFromStreamWriter(StreamWriter writer, Stream stream)
         {
             writer.Flush();
             stream.Position = 0;
@@ -61,29 +135,4 @@ NO",
             return reader.ReadToEnd();
         }
     }
-
-    /*public class UnitTestFacts
-    {
-        public int[][] createArray(int x, int[] classSizes, int defaultValue)
-        {
-            int[][] mdArray = new int[x][];
-            for (int i=0; i<x; i++) {
-                int[] odArray = new int[y];
-                for (int j=0; j<y; j++) {
-                    odArray[j]=defaultValue;
-                }
-                mdArray[i]=odArray;
-            }
-            return mdArray;
-        }
-        [Fact]
-        public void TestDiaginalDiff2x2()
-        {
-            int arraySize = 2;
-            int[][] rules = createArray(arraySize, 2, 0);//top left corner = 1 makes backslash 1 more than forward slash
-            int[][] arrivals = createArray(arraySize, 0);//top left corner = 1 makes backslash 1 more than forward slash
-            //matrix[0][0] = 1;
-            Assert.Equal(new string[] {"",""}, Solution.TestHarness(2, rules, arrivals));
-        }
-    }*/
 }

@@ -31,8 +31,10 @@ public class Solution {
         }
     }
     static void Main(String[] args) {
-        timeLine(new StreamReader(Console.OpenStandardInput(), Console.InputEncoding), 
-                 new StreamWriter(Console.OpenStandardOutput()));
+        StreamReader stdin = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding);
+        StreamWriter stdout = new StreamWriter(Console.OpenStandardOutput());
+        timeLine(stdin, stdout);
+        stdout.Flush();
     }
 }
 
