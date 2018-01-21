@@ -6,44 +6,29 @@ using System.Reflection;
 
 public class Solution {
 //https://www.hackerrank.com/challenges/angry-professor/problem
-    public static void TestHarness(StreamReader input, StreamWriter output)
-    {
+    public static void TestHarness(StreamReader input, StreamWriter output) {
         // call actual logic 
         timeLine(input, output);
     }
-/*    static string[] angryProfessor(int tests, int[][] rules, int[][] arrivals) {
-        // Complete this function
-        return new string[] {};
-    }*/
 
     static void timeLine(StreamReader source, StreamWriter destination) {
-        int tests = Convert.ToInt32(source.ReadLine());/* 
-        int[][] arrivals = new int[tests][];
-        int[][] rules = new int[tests][];
-        for(int a0 = 0; a0 < tests; a0++){
+        Professor lessonObserver = new Professor();
+      
+        int t = Convert.ToInt32(source.ReadLine());
+        for(int a0 = 0; a0 < t; a0++){
             string[] tokens_n = source.ReadLine().Split(' ');
-            rules[a0] = Array.ConvertAll(tokens_n,Int32.Parse);
-            tokens_n = source.ReadLine().Split(' ');
-            arrivals[a0] = Array.ConvertAll(tokens_n,Int32.Parse);
+            int n = Convert.ToInt32(tokens_n[0]);
+            int k = Convert.ToInt32(tokens_n[1]);
+            string[] a_temp = source.ReadLine().Split(' ');
+            int[] a = Array.ConvertAll(a_temp,Int32.Parse);
+            
+            ScheduledClass lessonProvider = new ScheduledClass(n, k);
+            lessonObserver.Subscribe(lessonProvider);
+            foreach (int time in a){
+                lessonProvider.RecordArrival(time);      
+            }
+            destination.WriteLine(lessonObserver.angry);            
         }
-        string[] result = angryProfessor(tests, rules, arrivals);
-        for(int a0 = 0; a0 < tests; a0++){
-            destination.WriteLine(result[a0]);        
-        }*/
-      ScheduledClass lessonProvider = new ScheduledClass(10,7);
-      Professor lessonObserver = new Professor();
-      lessonObserver.Subscribe(lessonProvider);
-
-      lessonProvider.RecordArrival(-1);
-            destination.WriteLine(lessonObserver.angry);  
-      lessonProvider.RecordArrival(1);
-      lessonProvider.RecordArrival(1);
-      lessonProvider.RecordArrival(1);
-      lessonProvider.RecordArrival(1);
-            destination.WriteLine(lessonObserver.angry);  
-            destination.WriteLine(tests); 
-            destination.WriteLine("no class for you");  
-            destination.WriteLine("no class today");  
     }
     static void Main(String[] args) {
         timeLine(new StreamReader(Console.OpenStandardInput(), Console.InputEncoding), 
@@ -51,9 +36,7 @@ public class Solution {
     }
 }
 
-
 class LectureTheatreDTO {    
-    public string cancelled { get; set; } = "?";
     public int onTime { get; set; } = 0;
     public int late { get; set; } = 0;   
     public int size { get; set; }
@@ -72,61 +55,58 @@ class ScheduledClass : IObservable<LectureTheatreDTO> {
         if (arrivalTime<=0)
             lesson.onTime++;
         else
-            lesson.late++;
-        foreach (var lecturer in staff)
+            lesson.late++;        
+        //copy the list before enumerating in case one observer ragequits when they see what thet don't like
+        List<IObserver<LectureTheatreDTO>> observers = new List<IObserver<LectureTheatreDTO>>(staff);
+        foreach (var lecturer in observers)
             lecturer.OnNext(lesson);
     }
-    public IDisposable Subscribe(IObserver<LectureTheatreDTO> lecturer)
-    {
-        // Check whether lecturer is already registered. If not, add it
-        if (! staff.Contains(lecturer)) {
-            staff.Add(lecturer);
-            // Provide observer with existing data.
-            lecturer.OnNext(lesson);
+    #region IObservable Members
+        public IDisposable Subscribe(IObserver<LectureTheatreDTO> lecturer)
+        {
+            // Check whether lecturer is already registered. If not, add it
+            if (! staff.Contains(lecturer)) {
+                staff.Add(lecturer);
+                // Provide observer with existing data.
+                lecturer.OnNext(lesson);
+            }
+            return new Unsubscriber<LectureTheatreDTO>(staff, lecturer);
         }
-        return new Unsubscriber<LectureTheatreDTO>(staff, lecturer);
-    }
+    #endregion IObservable Members
 }
 
 class Professor : IObserver<LectureTheatreDTO> {    
     public string angry { get; set; } = "?";
     private IDisposable subscription;
 
-   public virtual void OnNext(LectureTheatreDTO plannedClass) 
-   {
-        if (plannedClass.onTime > plannedClass.threshold) {
-            this.angry = "NO";
-        } else {
-            if (plannedClass.late > plannedClass.size-plannedClass.threshold) {
-                this.angry = "YES" ;   
-                //TODO: investigate why unsubscribing causes problems    Would it cause unsubscribe to be called twice?
-                //Unsubscribe();  //causes thread isues    
+    #region IObserver Members
+        public virtual void OnNext(LectureTheatreDTO plannedClass) {
+            if (plannedClass.onTime >= plannedClass.threshold) {
+                this.angry = "NO"; 
+                //stop watching and get on with the job, even if it causess problems for list enumeration
+                Unsubscribe();  
+            } else {
+                if (plannedClass.late >0 && plannedClass.late >= plannedClass.size-plannedClass.threshold) {
+                    this.angry = "YES" ;   
+                    //ragequit in protest, even if it causess problems for list enumeration
+                    Unsubscribe();  
+                } 
             } 
-        } 
-   }
+        }
+        public virtual void OnCompleted() {} // No implementation.
 
-   public virtual void Subscribe(ScheduledClass plannedClass)
-   {
-      subscription = plannedClass.Subscribe(this);
-   }
+        // No implementation needed: Method is not called by the ScheduledClass class.
+        public virtual void OnError(Exception e){} // No implementation.
+    #endregion IObserver Members
 
-   public virtual void Unsubscribe()
-   {
-      subscription.Dispose();
-   }
+    public virtual void Subscribe(ScheduledClass plannedClass) {
+        subscription = plannedClass.Subscribe(this);
+    }
 
-   public virtual void OnCompleted() 
-   {
-      // No implementation.
-   }
-
-   // No implementation needed: Method is not called by the ScheduledClass class.
-   public virtual void OnError(Exception e)
-   {
-      // No implementation.
-   }
+    public virtual void Unsubscribe() {
+        subscription.Dispose();
+    }
 }
-
 
 //Sample code from 
 //https://docs.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern

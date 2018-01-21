@@ -7,7 +7,20 @@ namespace lib.Xunit
     public class UnitTestTheories
     {
         [Theory]
-        [InlineData("yes", "1\r\n1 1\r\n0")]
+        [InlineData("NO", "1\r\n1 1\r\n0 0")]
+        [InlineData("NO", "1\r\n10 5\r\n-4 -3 -2 -1 0 1 2 3 4 5 6")]
+        [InlineData("NO", "1\r\n1 1\r\n0")]
+        [InlineData("YES", "1\r\n10 5\r\n-3 -2 -1 0 1 2 3 4 5 6")]
+        [InlineData("YES", "1\r\n1 1\r\n1")]
+        [InlineData("?", "1\r\n10 5\r\n-2 -1 0 1")]
+        [InlineData(
+@"YES
+NO", 
+@"2
+4 3
+-1 -3 4 2
+4 2
+0 -1 2 1")]
 
 
         public void TestProff(string expectedResult, string testData)
@@ -25,7 +38,8 @@ namespace lib.Xunit
                     actualResult = ReadFromStreamWriter(captureOutputData, outputDataStream);
                 }
             }
-            Assert.Equal(expectedResult, actualResult);
+            char[] charsToTrim = {'\r', '\n', ' '};
+            Assert.Equal(expectedResult, actualResult.TrimEnd(charsToTrim));
         }
 
         //helper method from https://stackoverflow.com/questions/1879395/how-do-i-generate-a-stream-from-a-string
