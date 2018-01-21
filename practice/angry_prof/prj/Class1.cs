@@ -50,16 +50,59 @@ public class Solution {
     }
 }
 
-class Sitting {    
-    public string cancelled { get; set; } = "?";
-    int size { get; set; }
-    int threshold { get; set; }
-    int onTime { get; set; } = 0;
-    int late { get; set; } = 0;   
 
-    public Sitting (int classSize, int classThreshold) {
-        size = classSize;
-        threshold = classThreshold;
+class LectureTheatreDTO {    
+    public string cancelled { get; set; } = "?";
+    public int onTime { get; set; } = 0;
+    public int late { get; set; } = 0;   
+    public int size { get; set; }
+    public int threshold { get; set; }
+
+    // public LectureTheatre () {
+    // }
+/* 
+    public void RecordArrival (int time) {
+        time<=0 ? onTime++ : late++;
+        if (onTime > size-threshold) {
+            cancelled = 'NO'
+        } else {
+        if (late > size-threshold) {
+            cancelled = 'YES'            
+        }
+    } */
+}
+
+class ScheduledClass : IObservable<LectureTheatreDTO> {   
+    private List<IObserver<LectureTheatreDTO>> staff; 
+    private LectureTheatreDTO lesson;
+
+    /*public string cancelled { get; set; } = "?";
+    int size { get; set; }
+    int threshold { get; set; }*/
+
+    public ScheduledClass (int classSize, int classThreshold) {
+        staff = new List<IObserver<LectureTheatreDTO>>();
+        lesson = new LectureTheatreDTO();
+        lesson.size = classSize;
+        lesson.threshold = classThreshold;
+    }
+    public void RecordArrival (int arrivalTime) {
+        if (arrivalTime<=0)
+            lesson.onTime++;
+        else
+            lesson.late++;
+        foreach (var lecturer in staff)
+            lecturer.OnNext(lesson);
+    }
+    public IDisposable Subscribe(IObserver<LectureTheatreDTO> lecturer)
+    {
+        // Check whether lecturer is already registered. If not, add it
+        if (! staff.Contains(lecturer)) {
+            staff.Add(lecturer);
+            // Provide observer with existing data.
+            lecturer.OnNext(lesson);
+        }
+        return new Unsubscriber<LectureTheatreDTO>(staff, lecturer);
     }
 /* 
     public void RecordArrival (int time) {
@@ -73,8 +116,9 @@ class Sitting {
     } */
 }
 
-class Professor {    
-    public string angry { get;  } = "?";
+class Professor : IObserver<LectureTheatreDTO> {    
+    public string angry { get; set; } = "?";
+    private IDisposable subscription;
     //Sitting classRoomSitting;
 
    /*  public Professor (int classSize, int classThreshold) {
@@ -92,16 +136,48 @@ class Professor {
             } 
         } 
     }*/
+   public virtual void OnNext(LectureTheatreDTO plannedClass) 
+   {
+        if (plannedClass.onTime > plannedClass.threshold) {
+            this.angry = "NO";
+        } else {
+            if (plannedClass.late > plannedClass.size-plannedClass.threshold) {
+                this.angry = "YES" ;     
+                Unsubscribe();      
+            } 
+        } 
+   }
+
+   public virtual void Subscribe(ScheduledClass plannedClass)
+   {
+      subscription = plannedClass.Subscribe(this);
+   }
+
+   public virtual void Unsubscribe()
+   {
+      subscription.Dispose();
+      //flightInfos.Clear();
+   }
+
+   public virtual void OnCompleted() 
+   {
+      //flightInfos.Clear();
+   }
+
+   // No implementation needed: Method is not called by the BaggageHandler class.
+   public virtual void OnError(Exception e)
+   {
+      // No implementation.
+   }
 }
 
 
-
-class IObservableSitting<T> : IObservable<T> where T:class {    
-    /* public string cancelled { get; set; } = "?";
-    int size { get; set; }
-    int threshold { get; set; }
-    int onTime { get; set; } = 0;
-    int late { get; set; } = 0; */
+/* class IObservableSitting<T> : IObservable<T> where T:class {    
+    // public string cancelled { get; set; } = "?";
+    // int size { get; set; }
+    // int threshold { get; set; }
+    // int onTime { get; set; } = 0;
+    // int late { get; set; } = 0; 
 
     
     private List<IObserver<T>> observers = new List<IObserver<T>>();
@@ -114,20 +190,20 @@ class IObservableSitting<T> : IObservable<T> where T:class {
         }
     #endregion
 
-   /*  public Sitting (int classSize, int classThreshold) {
-        size = classSize;
-        threshold = classThreshold;
-    } */
-/* 
-    public void RecordArrival (int time) {
-        time<=0 ? onTime++ : late++;
-        if (onTime > size-threshold) {
-            cancelled = 'NO'
-        } else {
-        if (late > size-threshold) {
-            cancelled = 'YES'            
-        }
-    } */
+    // public Sitting (int classSize, int classThreshold) {
+    //     size = classSize;
+    //     threshold = classThreshold;
+    // } 
+ 
+    // public void RecordArrival (int time) {
+    //     time<=0 ? onTime++ : late++;
+    //     if (onTime > size-threshold) {
+    //         cancelled = 'NO'
+    //     } else {
+    //     if (late > size-threshold) {
+    //         cancelled = 'YES'            
+    //     }
+    // } 
 }
 
 class IObserverProfessor<T> : IObserver<T> where T:class, new() {    
@@ -172,11 +248,11 @@ class IObserverProfessor<T> : IObserver<T> where T:class, new() {
         //Console.WriteLine("Exception occurred while traversing thorough objects of type {0}", error.GetType().Name);
         Console.WriteLine("Exception Message : {0}", error.Message);
     }
-}
+} */
 
 
 
-
+/* 
 //sample code from http://www.abhisheksur.com/2010/08/implementation-of-observer.html
 //want a portable observable implementation becasue hackerrank does not allow asemblies
 public class SampleObserver<T> : IObserver<T> where T:class, new()
@@ -242,31 +318,34 @@ public class SampleObserver<T> : IObserver<T> where T:class, new()
 
             
     }
-}
+} */
 
-// A simple Disposable object
+//Sample code from 
+//https://docs.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern
+// AND http://www.abhisheksur.com/2010/08/implementation-of-observer.html
 public class Unsubscriber<T> :IDisposable
 {
-    private List<IObserver<T>> observers;
-    private IObserver<T> observer;
+    private List<IObserver<T>> _observers;
+    private IObserver<T> _observer;
 
+    //TODO: use callback to unubscribe
     public Unsubscriber(List<IObserver<T>> observers, IObserver<T> observer)
     {
-        this.observers = observers;
-        this.observer = observer;
+        this._observers = observers;
+        this._observer = observer;
     }
     #region IDisposable Members
         public void Dispose()
         {
-            //We will just remove the Observer from the list whenever the unsubscription calls.
-            if (observer != null && observers.Contains(observer))
-                observers.Remove(observer);
+            //Remove the Observer from the list when the subscriber disposes the diposable.
+            if (_observer != null && _observers.Contains(_observer))
+                _observers.Remove(_observer);
         }
     #endregion
 }
 
 
-public class SampleObservable<T> : IObservable<T> where T:class
+/* public class SampleObservable<T> : IObservable<T> where T:class
 {
 
     private List<IObserver<T>> observers = new List<IObserver<T>>();
@@ -298,6 +377,6 @@ public class SampleObservable<T> : IObservable<T> where T:class
             observer.OnCompleted();
 
         observers.Clear();
-    }
+    } 
+}*/
         
-}
