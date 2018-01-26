@@ -31,7 +31,7 @@ NO",
 
         public void TestProff(string expectedResult, string testData)
         {
-            string actualResult = TestHelper.StreamDataToTestHarness(testData); 
+            string actualResult = TestHelper.StreamDataToTestHarness(testData, Solution.TestHarness); 
             Assert.Equal(expectedResult, actualResult);
         }
 
@@ -61,7 +61,7 @@ NO",
                 testData.AppendLine();
                 expectedResult = expectedResult + "NO\r\n";
             }
-            string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString());
+            string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString(), Solution.TestHarness);
             Assert.Equal(expectedResult.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
         }
         public void TestMaxClassFail()
@@ -81,7 +81,7 @@ NO",
                 testData.AppendLine();
                 expectedResult = expectedResult + "YES\r\n";
             }
-            string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString());
+            string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString(), Solution.TestHarness);
             Assert.Equal(expectedResult.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
         }
         public void TestSuperLargeClass()
@@ -101,60 +101,10 @@ NO",
                 testData.AppendLine();
                 expectedResult = expectedResult + "YES\r\n";
             }
-            string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString());
+            string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString(), Solution.TestHarness);
             Assert.Equal(expectedResult.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
         }
     }
 
 
-
-    public class TestHelper 
-    {
-        private readonly ITestOutputHelper xUnitConsole;
-
-        public TestHelper(ITestOutputHelper output)
-        {
-            this.xUnitConsole = output;
-        }
-        public void XUnitWriteLine(string testData)
-        {        
-            xUnitConsole.WriteLine(testData);
-        }
-        public static String StreamDataToTestHarness(string testData)
-        {
-            //build streams to simulate stdin and stdout
-            //that allows the test to control and monitor the data
-            string actualResult; 
-            using (Stream inputData = TestHelper.GenerateStreamFromString(testData))
-            {   
-                using (Stream outputDataStream = new MemoryStream())
-                {
-                    StreamWriter captureOutputData = new StreamWriter(outputDataStream);  
-                    StreamReader sendInputData     = new StreamReader(inputData);   
-                    Solution.TestHarness(sendInputData, captureOutputData);
-                    actualResult = TestHelper.ReadFromStreamWriter(captureOutputData, outputDataStream);
-                }
-            }
-            char[] charsToTrim = {'\r', '\n', ' '};
-            return actualResult.TrimEnd(charsToTrim);
-        }
-        //helper method from https://stackoverflow.com/questions/1879395/how-do-i-generate-a-stream-from-a-string
-        public static Stream GenerateStreamFromString(string s)
-        {
-            MemoryStream stream = new MemoryStream();
-            StreamWriter writer = new StreamWriter(stream);
-            writer.Write(s);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
-        }
-        
-        public static string ReadFromStreamWriter(StreamWriter writer, Stream stream)
-        {
-            writer.Flush();
-            stream.Position = 0;
-            StreamReader reader = new StreamReader(stream);
-            return reader.ReadToEnd();
-        }
-    }
 }
