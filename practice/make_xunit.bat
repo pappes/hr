@@ -1,6 +1,8 @@
 rem create library project containg the required source
 rem based on instructions from http://asp.net-hacker.rocks/2017/03/31/unit-testing-with-dotnetcore.html
 rem more info https://xunit.github.io/docs/comparisons.html
+md %1
+cd %1
 md project
 pushd project
     md library
@@ -21,6 +23,7 @@ pushd project
         pushd lib.Xunit
             dotnet new xunit
             dotnet add reference ..\prj\prj.csproj
+            dotnet add reference ..\..\..\..\..\lib\TestHelper\TestHelper.csproj
         popd
         dotnet sln add lib.Xunit\lib.Xunit.csproj
 
