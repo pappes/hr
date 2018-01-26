@@ -2,11 +2,16 @@ using System;
 using System.IO;
 using System.Text;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace lib.Xunit
 {
-    public class UnitTestTheories
+    public class UnitTestTheories : TestHelper
     {
+        public UnitTestTheories (ITestOutputHelper output)
+        : base(output) { }
+
+
         [Theory]
         [InlineData("NO", "1\r\n1 1\r\n0 0")]
         [InlineData("NO", "1\r\n1 1\r\n0")]
@@ -32,8 +37,11 @@ NO",
 
     }
 
-    public class UnitTestFacts
+    public class UnitTestFacts : TestHelper
     {
+        public UnitTestFacts (ITestOutputHelper output)
+        : base(output) { }
+
         [Fact]
         public void TestMaxClassOK()
         {
@@ -43,6 +51,7 @@ NO",
             int maxClass = 1000;
             int threshold = maxClass;
             StringBuilder testData = new StringBuilder("", maxTests*maxClass*2+maxTests*15);
+    //XUnitWriteLine($"maxTests:{maxTests} maxClass:{maxClass} threshold:{threshold} testData:{testData}");
             testData.Append( $"{maxTests}\r\n");
             for (int i=0; i< maxTests; i++){
                 testData.Append($"{maxClass} {threshold}\r\n");
@@ -96,8 +105,21 @@ NO",
             Assert.Equal(expectedResult.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
         }
     }
-    public class TestHelper
+
+
+
+    public class TestHelper 
     {
+        private readonly ITestOutputHelper xUnitConsole;
+
+        public TestHelper(ITestOutputHelper output)
+        {
+            this.xUnitConsole = output;
+        }
+        public void XUnitWriteLine(string testData)
+        {        
+            xUnitConsole.WriteLine(testData);
+        }
         public static String StreamDataToTestHarness(string testData)
         {
             //build streams to simulate stdin and stdout
