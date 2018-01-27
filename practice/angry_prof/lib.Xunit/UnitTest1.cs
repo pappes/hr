@@ -46,64 +46,37 @@ NO",
         [Fact]
         public void TestMaxClassOK()
         {
-            var expectedResult = ""; 
-            char[] charsToTrim = {'\r', '\n', ' '};
-            var maxTests = 10;
-            var maxClass = 1000;
-            var threshold = maxClass;
-            StringBuilder testData = new StringBuilder("", maxTests*maxClass*2+maxTests*15);
-    //XUnitWriteLine($"maxTests:{maxTests} maxClass:{maxClass} threshold:{threshold} testData:{testData}");
-            testData.Append( $"{maxTests}\r\n");
-            for (var i=0; i< maxTests; i++){
-                testData.Append($"{maxClass} {threshold}\r\n");
-                for (var j=0; j<maxClass; j++){
-                    testData.Append( j<maxClass-1 ? "0 " : "0" );
-                }
-                testData.AppendLine();
-                expectedResult = expectedResult + "NO\r\n";
-            }
-            string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString(), Solution.Services.Solution.TestHarness);
-            Assert.Equal(expectedResult.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
+            TestLargeClass();
         }
         public void TestMaxClassFail()
         {
-            var expectedResult = ""; 
-            char[] charsToTrim = {'\r', '\n', ' '};
-            var maxTests = 10;
-            var maxClass = 1000;
-            var threshold = maxClass;
-            StringBuilder testData = new StringBuilder("", maxTests*maxClass*2+maxTests*15);
-            testData.Append( $"{maxTests}\r\n");
-            for (var i=0; i< maxTests; i++){
-                testData.Append($"{maxClass} {threshold}\r\n");
-                for (var j=0; j<maxClass; j++){
-                    testData.Append( j<maxClass-1 ? "0 " : "1" );
-                }
-                testData.AppendLine();
-                expectedResult = expectedResult + "YES\r\n";
-            }
-            string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString(), Solution.Services.Solution.TestHarness);
-            Assert.Equal(expectedResult.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
+            TestLargeClass(lastStudentTime: 1);
         }
         public void TestSuperLargeClass()
         {
-            var expectedResult = ""; 
+            TestLargeClass(classSize: 10000);
+        }
+        public void TestLargeClass(int classSize = 1000, int lastStudentTime = default(int))
+        {
+            var combinedResults = ""; 
             char[] charsToTrim = {'\r', '\n', ' '};
-            var maxTests = 100;
-            var maxClass = 10000;
-            var threshold = maxClass;
-            StringBuilder testData = new StringBuilder("", maxTests*maxClass*2+maxTests*15);
+            var maxTests = 10;
+            var threshold = classSize;
+            var expectedResult = lastStudentTime >0 ? "YES": "NO";
+            //start the string builder big enough to hold the final sring size
+            StringBuilder testData = new StringBuilder("", maxTests*classSize*2+maxTests*15);
             testData.Append( $"{maxTests}\r\n");
+    //XUnitWriteLine($"maxTests:{maxTests} classSize:{classSize} threshold:{threshold} testData:{testData}");
             for (var i=0; i< maxTests; i++){
-                testData.Append($"{maxClass} {threshold}\r\n");
-                for (var j=0; j<maxClass; j++){
-                    testData.Append( j<maxClass-1 ? "0 " : "1" );
+                testData.Append($"{classSize} {threshold}\r\n");
+                for (var j=0; j<classSize; j++){
+                    testData.Append( j<classSize-1 ? "0 " : lastStudentTime.ToString() );
                 }
                 testData.AppendLine();
-                expectedResult = expectedResult + "YES\r\n";
+                combinedResults = combinedResults + $"{expectedResult}\r\n";
             }
             string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString(), Solution.Services.Solution.TestHarness);
-            Assert.Equal(expectedResult.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
+            Assert.Equal(combinedResults.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
         }
     }
 
