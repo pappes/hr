@@ -97,25 +97,35 @@ NO",
             Assert.Equal(testClass.OnTimeStudents, 1);
             Assert.Equal(testClass.LateStudents, default(int));
             testClass.UpdateStatistics(-1);
-            Assert.Equal(testClass.ClassSize, 1);
-            Assert.Equal(testClass.CancellationThreshold, 2);
-            Assert.Equal(testClass.OnTimeStudents, 2);
-            Assert.Equal(testClass.LateStudents, default(int));
+            Assert.Equal(1, testClass.ClassSize);
+            Assert.Equal(2, testClass.CancellationThreshold);
+            Assert.Equal(2, testClass.OnTimeStudents);
+            Assert.Equal(default(int), testClass.LateStudents);
             testClass.UpdateStatistics(int.MinValue);
-            Assert.Equal(testClass.ClassSize, 1);
-            Assert.Equal(testClass.CancellationThreshold, 2);
-            Assert.Equal(testClass.OnTimeStudents, 3);
-            Assert.Equal(testClass.LateStudents, default(int));
+            Assert.Equal(1, testClass.ClassSize);
+            Assert.Equal(2, testClass.CancellationThreshold);
+            Assert.Equal(3, testClass.OnTimeStudents);
+            Assert.Equal(default(int), testClass.LateStudents);
             testClass.UpdateStatistics(1);
-            Assert.Equal(testClass.ClassSize, 1);
-            Assert.Equal(testClass.CancellationThreshold, 2);
-            Assert.Equal(testClass.OnTimeStudents, 3);
-            Assert.Equal(testClass.LateStudents, 1);
+            Assert.Equal(1, testClass.ClassSize);
+            Assert.Equal(2, testClass.CancellationThreshold);
+            Assert.Equal(3, testClass.OnTimeStudents);
+            Assert.Equal(1, testClass.LateStudents);
             testClass.UpdateStatistics(int.MaxValue);
-            Assert.Equal(testClass.ClassSize, 1);
-            Assert.Equal(testClass.CancellationThreshold, 2);
-            Assert.Equal(testClass.OnTimeStudents, 3);
-            Assert.Equal(testClass.LateStudents, 2);
+            Assert.Equal(1, testClass.ClassSize);
+            Assert.Equal(2, testClass.CancellationThreshold);
+            Assert.Equal(3, testClass.OnTimeStudents);
+            Assert.Equal(2, testClass.LateStudents);
+        }
+        public void TestUnsubscriberLambda() 
+        {
+            var canary=1;
+            using (var x = new UnsubscriberLambda(() => canary=2)) 
+            {
+                Assert.Equal(1, canary);
+            }
+            Assert.Equal(2, canary);
+
         }
     }
 
