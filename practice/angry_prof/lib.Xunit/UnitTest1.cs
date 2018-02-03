@@ -20,7 +20,7 @@ namespace lib.Xunit
         [InlineData("NO", "1\r\n1 1\r\n0")]
         [InlineData("YES", "1\r\n10 5\r\n-3 -2 -1 0 1 2 3 4 5 6")]
         [InlineData("YES", "1\r\n1 1\r\n1")]
-        [InlineData("?", "1\r\n10 5\r\n-2 -1 0 1")]
+        [InlineData("NO", "1\r\n10 5\r\n-2 -1 0 1")]
         [InlineData(
 @"YES
 NO", 
@@ -115,7 +115,7 @@ NO",
             Assert.Equal(testClass.ClassSize, 1);
             Assert.Equal(testClass.CancellationThreshold, 2);
             Assert.Equal(testClass.OnTimeStudents, 3);
-            Assert.Equal(testClass.LateStudents, 1);
+            Assert.Equal(testClass.LateStudents, 2);
         }
     }
 
