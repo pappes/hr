@@ -58,6 +58,7 @@ NO",
         }
         public void TestLargeClass(int classSize = 1000, int lastStudentTime = default(int))
         {
+            //construct a test case dynamically by building up the input and output strings
             var combinedResults = ""; 
             char[] charsToTrim = {'\r', '\n', ' '};
             var maxTests = 10;
@@ -80,5 +81,5 @@ NO",
         }
     }
 
-
+//TODO: unit test individual methods
 }

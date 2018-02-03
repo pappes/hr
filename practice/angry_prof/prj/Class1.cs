@@ -13,10 +13,10 @@ namespace Solution.Services {
         public static void TestHarness(StreamReader input, StreamWriter output) 
         {
             // Call actual logic.
-            timeLine(input, output);
+            TimeLine(input, output);
         }
 
-        static void timeLine(StreamReader source, StreamWriter destination) 
+        static void TimeLine(StreamReader source, StreamWriter destination) 
         {
             var lessonObserver = new Professor();
         
@@ -33,58 +33,58 @@ namespace Solution.Services {
                 foreach (var time in a){
                     lessonProvider.RecordArrival(time);      
                 }
-                destination.WriteLine(lessonObserver.angry);            
+                destination.WriteLine(lessonObserver.Angry);            
             }
         }
         static void Main(String[] args) 
         {
             StreamReader stdin = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding);
             StreamWriter stdout = new StreamWriter(Console.OpenStandardOutput());
-            timeLine(stdin, stdout);
+            TimeLine(stdin, stdout);
             stdout.Flush();
         }
     }
 
     class LectureTheatre {    
-        public int onTimeStudents { get; set; } = 0;
-        public int lateStudents { get; set; } = 0;   
-        public int classSize { get; set; }
-        public int cancellationThreshold { get; set; }
+        public int OnTimeStudents { get; set; } = 0;
+        public int LateStudents { get; set; } = 0;   
+        public int ClassSize { get; set; }
+        public int CancellationThreshold { get; set; }
 
         public void InitialiseStatistics (int expectedClassSize, int classCancellationThreshold) 
         {
-            classSize = expectedClassSize;
-            cancellationThreshold = classCancellationThreshold;
+            ClassSize = expectedClassSize;
+            CancellationThreshold = classCancellationThreshold;
         }
         public void UpdateStatistics (int arrivalTime) 
         {
             if (arrivalTime<=0)
-                onTimeStudents++;
+                OnTimeStudents++;
             else
-                lateStudents++;   
+                LateStudents++;   
         }
     }
 
     class ScheduledClass : LectureObservable {   
-        private List<LectureObserver> _staff = new List<LectureObserver>(); 
-        private LectureTheatre _lesson = new LectureTheatre();
+        private List<LectureObserver> _Staff = new List<LectureObserver>(); 
+        private LectureTheatre _Lesson = new LectureTheatre();
 
         public ScheduledClass (int expectedClassSize, int classCancellationThreshold) 
         {
-            _lesson.InitialiseStatistics(expectedClassSize, classCancellationThreshold);
+            _Lesson.InitialiseStatistics(expectedClassSize, classCancellationThreshold);
         }
         public void RecordArrival (int arrivalTime) 
         {
-            _lesson.UpdateStatistics(arrivalTime);        
-            NotifyStaff(_staff,_lesson);
+            _Lesson.UpdateStatistics(arrivalTime);        
+            NotifyStaff(_Staff,_Lesson);
         }
         #region IObservable Members
             public IDisposable Subscribe(LectureObserver lecturer)
             {
-                RecordSubscription(_staff, lecturer);            
+                RecordSubscription(_Staff, lecturer);            
                 // Provide observer with existing data.
-                lecturer.OnNext(_lesson);
-                return CreateUnsubscriber(_staff, lecturer);
+                lecturer.OnNext(_Lesson);
+                return CreateUnsubscriber(_Staff, lecturer);
             }
         #endregion IObservable Members
 
@@ -113,12 +113,12 @@ namespace Solution.Services {
 
     class Professor : LectureObserver 
     {    
-        public string angry { get; set; } = "?";
-        private IDisposable _subscription;
+        public string Angry { get; set; } = "?";
+        private IDisposable _Subscription;
 
         public void Subscribe(ScheduledClass plannedClass) 
         {
-            SubscribeT(ref _subscription, plannedClass, this);
+            SubscribeT(ref _Subscription, plannedClass, this);
         }
         #region IObserver Members
             public virtual void OnNext(LectureTheatre plannedClass) 
@@ -131,14 +131,14 @@ namespace Solution.Services {
 
         private bool ConfirmAttendance(LectureTheatre plannedClass) 
         {
-            if (plannedClass.onTimeStudents >= plannedClass.cancellationThreshold) {
-                this.angry = "NO";             
+            if (plannedClass.OnTimeStudents >= plannedClass.CancellationThreshold) {
+                this.Angry = "NO";             
                 // Stop watching and get on with the job (even if it causess problems for list enumeration).
                 return true; 
             } else {
-                if (plannedClass.lateStudents >0 && 
-                    plannedClass.lateStudents >= plannedClass.classSize-plannedClass.cancellationThreshold) {
-                    this.angry = "YES" ;                  
+                if (plannedClass.LateStudents >0 && 
+                    plannedClass.LateStudents >= plannedClass.ClassSize-plannedClass.CancellationThreshold) {
+                    this.Angry = "YES" ;                  
                     // Ragequit in protest( even if it causess problems for list enumeration).
                     return true; 
                 } 
@@ -156,22 +156,22 @@ namespace Solution.Services {
         }
         private void Unsubscribe() 
         {
-            UnsubscribeT(_subscription);
+            UnsubscribeT(_Subscription);
         }
     }
 
     public class UnsubscriberLambda :IDisposable
     {
-        private Action _disposeCallback;
+        private Action _DsposeCallback;
 
         public UnsubscriberLambda(Action callback)
         {
-            _disposeCallback = callback;
+            _DsposeCallback = callback;
         }
         #region IDisposable Members
             public void Dispose()
             {
-                _disposeCallback();
+                _DsposeCallback();
             }
         #endregion
     }
