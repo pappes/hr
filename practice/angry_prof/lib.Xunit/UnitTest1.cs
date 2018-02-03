@@ -80,6 +80,44 @@ NO",
             Assert.Equal(combinedResults.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
         }
     }
+    public class UnitTestMethods
+    {
+        [Fact]
+        public void TestLectureTheatre()
+        {
+            var testClass = new LectureTheatre();
+            testClass.InitialiseStatistics(1,2);
+            Assert.Equal(testClass.ClassSize, 1);
+            Assert.Equal(testClass.CancellationThreshold, 2);
+            Assert.Equal(testClass.OnTimeStudents, default(int));
+            Assert.Equal(testClass.LateStudents, default(int));
+            testClass.UpdateStatistics(0);
+            Assert.Equal(testClass.ClassSize, 1);
+            Assert.Equal(testClass.CancellationThreshold, 2);
+            Assert.Equal(testClass.OnTimeStudents, 1);
+            Assert.Equal(testClass.LateStudents, default(int));
+            testClass.UpdateStatistics(-1);
+            Assert.Equal(testClass.ClassSize, 1);
+            Assert.Equal(testClass.CancellationThreshold, 2);
+            Assert.Equal(testClass.OnTimeStudents, 2);
+            Assert.Equal(testClass.LateStudents, default(int));
+            testClass.UpdateStatistics(int.MinValue);
+            Assert.Equal(testClass.ClassSize, 1);
+            Assert.Equal(testClass.CancellationThreshold, 2);
+            Assert.Equal(testClass.OnTimeStudents, 3);
+            Assert.Equal(testClass.LateStudents, default(int));
+            testClass.UpdateStatistics(1);
+            Assert.Equal(testClass.ClassSize, 1);
+            Assert.Equal(testClass.CancellationThreshold, 2);
+            Assert.Equal(testClass.OnTimeStudents, 3);
+            Assert.Equal(testClass.LateStudents, 1);
+            testClass.UpdateStatistics(int.MaxValue);
+            Assert.Equal(testClass.ClassSize, 1);
+            Assert.Equal(testClass.CancellationThreshold, 2);
+            Assert.Equal(testClass.OnTimeStudents, 3);
+            Assert.Equal(testClass.LateStudents, 1);
+        }
+    }
 
 //TODO: unit test individual methods
 }

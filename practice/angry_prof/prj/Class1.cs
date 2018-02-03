@@ -33,7 +33,7 @@ namespace Solution.Services {
                 foreach (var time in a){
                     lessonProvider.RecordArrival(time);      
                 }
-                destination.WriteLine(lessonObserver.Angry);            
+                destination.WriteLine(lessonObserver.StateOfMind == Professor.MentalState.Angry ? "YES" : "NO");            
             }
         }
         static void Main(String[] args) 
@@ -45,7 +45,7 @@ namespace Solution.Services {
         }
     }
 
-    class LectureTheatre {    
+    public class LectureTheatre {    
         public int OnTimeStudents { get; set; } = 0;
         public int LateStudents { get; set; } = 0;   
         public int ClassSize { get; set; }
@@ -65,7 +65,7 @@ namespace Solution.Services {
         }
     }
 
-    class ScheduledClass : LectureObservable {   
+    public class ScheduledClass : LectureObservable {   
         private List<LectureObserver> _Staff = new List<LectureObserver>(); 
         private LectureTheatre _Lesson = new LectureTheatre();
 
@@ -88,21 +88,21 @@ namespace Solution.Services {
             }
         #endregion IObservable Members
 
-        private static void NotifyStaff (List<LectureObserver> staff, LectureTheatre lesson) 
+        internal static void NotifyStaff (List<LectureObserver> staff, LectureTheatre lesson) 
         {
             // Copy the list before enumerating in case one observer ragequits when they see what thet don't like.
             List<LectureObserver> staffClone = new List<LectureObserver>(staff);
             foreach (var lecturer in staffClone)
                 lecturer.OnNext(lesson);
         }
-        private static void RecordSubscription (List<LectureObserver> staff, LectureObserver lecturer) 
+        internal static void RecordSubscription (List<LectureObserver> staff, LectureObserver lecturer) 
         {
             // Check whether lecturer is already registered. If not, add it.
             if (! staff.Contains(lecturer)) {
                 staff.Add(lecturer);
             }
         }
-        private static void Unsubscribe (List<LectureObserver> staff, LectureObserver lecturer) {
+        internal static void Unsubscribe (List<LectureObserver> staff, LectureObserver lecturer) {
             if (staff.Contains(lecturer)) 
                 staff.Remove(lecturer);
         }
@@ -111,9 +111,11 @@ namespace Solution.Services {
         }
     }
 
-    class Professor : LectureObserver 
+    public class Professor : LectureObserver 
     {    
-        public string Angry { get; set; } = "?";
+        public enum MentalState { Calm, Pensive, Angry}
+        //state of mind as public property (not getter/etter) becasue we want to be able to pass by ref
+        public MentalState StateOfMind = MentalState.Pensive;
         private IDisposable _Subscription;
 
         public void Subscribe(ScheduledClass plannedClass) 
@@ -123,22 +125,22 @@ namespace Solution.Services {
         #region IObserver Members
             public virtual void OnNext(LectureTheatre plannedClass) 
             {
-                if (ConfirmAttendance(plannedClass)) Unsubscribe();
+                if (ConfirmAttendance(ref StateOfMind, plannedClass)) Unsubscribe();
             }
             public virtual void OnCompleted() {} // No implementation.
             public virtual void OnError(Exception e){} // No implementation.
         #endregion IObserver Members    
 
-        private bool ConfirmAttendance(LectureTheatre plannedClass) 
+        internal bool ConfirmAttendance(ref MentalState stateOfMind, LectureTheatre plannedClass) 
         {
             if (plannedClass.OnTimeStudents >= plannedClass.CancellationThreshold) {
-                this.Angry = "NO";             
+                stateOfMind = MentalState.Calm;              
                 // Stop watching and get on with the job (even if it causess problems for list enumeration).
                 return true; 
             } else {
                 if (plannedClass.LateStudents >0 && 
                     plannedClass.LateStudents >= plannedClass.ClassSize-plannedClass.CancellationThreshold) {
-                    this.Angry = "YES" ;                  
+                    stateOfMind = MentalState.Angry ;                  
                     // Ragequit in protest( even if it causess problems for list enumeration).
                     return true; 
                 } 
@@ -146,11 +148,11 @@ namespace Solution.Services {
             // Attendence is incomplete so need more data.
             return false; 
         }
-        private void UnsubscribeT(IDisposable subscription) 
+        internal void UnsubscribeT(IDisposable subscription) 
         {
             subscription.Dispose();
         }
-        private void SubscribeT(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber) 
+        internal void SubscribeT(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber) 
         {
             subscription = plannedClass.Subscribe(subscriber);
         }
