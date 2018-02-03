@@ -10,11 +10,9 @@ namespace Solution.Services {
 
     public class Solution {
     //https://www.hackerrank.com/challenges/angry-professor/problem
-        public static void TestHarness(StreamReader input, StreamWriter output) 
-        {
+        public static void TestHarness(StreamReader input, StreamWriter output) =>
             // Call actual logic.
             TimeLine(input, output);
-        }
 
         static void TimeLine(StreamReader source, StreamWriter destination) 
         {
@@ -69,10 +67,9 @@ namespace Solution.Services {
         private List<LectureObserver> _Staff = new List<LectureObserver>(); 
         private LectureTheatre _Lesson = new LectureTheatre();
 
-        public ScheduledClass (int expectedClassSize, int classCancellationThreshold) 
-        {
+        public ScheduledClass (int expectedClassSize, int classCancellationThreshold) =>        
             _Lesson.InitialiseStatistics(expectedClassSize, classCancellationThreshold);
-        }
+        
         public void RecordArrival (int arrivalTime) 
         {
             _Lesson.UpdateStatistics(arrivalTime);        
@@ -98,17 +95,14 @@ namespace Solution.Services {
         internal static void RecordSubscription (List<LectureObserver> staff, LectureObserver lecturer) 
         {
             // Check whether lecturer is already registered. If not, add it.
-            if (! staff.Contains(lecturer)) {
-                staff.Add(lecturer);
-            }
+            if (! staff.Contains(lecturer)) staff.Add(lecturer);
         }
-        internal static void Unsubscribe (List<LectureObserver> staff, LectureObserver lecturer) {
-            if (staff.Contains(lecturer)) 
-                staff.Remove(lecturer);
+        internal static void Unsubscribe (List<LectureObserver> staff, LectureObserver lecturer) 
+        {    
+            if (staff.Contains(lecturer)) staff.Remove(lecturer);
         }
-        private static IDisposable CreateUnsubscriber (List<LectureObserver> staff, LectureObserver lecturer) {
-            return new UnsubscriberLambda(() => Unsubscribe(staff, lecturer) );
-        }
+        private static IDisposable CreateUnsubscriber (List<LectureObserver> staff, LectureObserver lecturer) =>
+            new UnsubscriberLambda(() => Unsubscribe(staff, lecturer) );
     }
 
     public class Professor : LectureObserver 
@@ -118,10 +112,9 @@ namespace Solution.Services {
         public MentalState StateOfMind = MentalState.Pensive;
         private IDisposable _Subscription;
 
-        public void Subscribe(ScheduledClass plannedClass) 
-        {
+        public void Subscribe(ScheduledClass plannedClass) =>
             SubscribeT(ref _Subscription, plannedClass, this);
-        }
+
         #region IObserver Members
             public virtual void OnNext(LectureTheatre plannedClass) 
             {
@@ -148,33 +141,27 @@ namespace Solution.Services {
             // Attendence is incomplete so need more data.
             return false; 
         }
-        internal void UnsubscribeT(IDisposable subscription) 
-        {
+        internal void UnsubscribeT(IDisposable subscription) =>
             subscription.Dispose();
-        }
-        internal void SubscribeT(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber) 
-        {
+        
+        internal void SubscribeT(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber) =>
             subscription = plannedClass.Subscribe(subscriber);
-        }
-        private void Unsubscribe() 
-        {
+        
+        private void Unsubscribe() =>
             UnsubscribeT(_Subscription);
-        }
     }
 
     public class UnsubscriberLambda :IDisposable
     {
-        private Action _DsposeCallback;
+        private Action _DisposeCallback;
 
-        public UnsubscriberLambda(Action callback)
-        {
-            _DsposeCallback = callback;
-        }
+        public UnsubscriberLambda(Action callback) => 
+            _DisposeCallback = callback;
+        
         #region IDisposable Members
-            public void Dispose()
-            {
-                _DsposeCallback();
-            }
+            public void Dispose() =>
+                _DisposeCallback();
+
         #endregion
     }
 }
