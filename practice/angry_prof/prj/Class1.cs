@@ -73,12 +73,12 @@ namespace Solution.Services {
         public int ClassSize { get; set; }
         public int CancellationThreshold { get; set; }
 
-        public void InitialiseStatistics (int expectedClassSize, int classCancellationThreshold) 
+        public virtual void InitialiseStatistics (int expectedClassSize, int classCancellationThreshold) 
         {
             ClassSize = expectedClassSize;
             CancellationThreshold = classCancellationThreshold;
         }
-        public void UpdateStatistics (int arrivalTime) 
+        public virtual void UpdateStatistics (int arrivalTime) 
         {
             if (arrivalTime<=0)
                 OnTimeStudents++;

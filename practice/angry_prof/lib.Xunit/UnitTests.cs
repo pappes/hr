@@ -43,6 +43,7 @@ namespace lib.Xunit.UnitTests
             Assert.Equal(3, testClass.OnTimeStudents);
             Assert.Equal(2, testClass.LateStudents);
         }
+        [Fact]
         public void TestUnsubscriberLambda() 
         {
             var canary=1;
@@ -53,9 +54,11 @@ namespace lib.Xunit.UnitTests
             }
             Assert.Equal(2, canary);
         }
+        //[Fact]
         public void TestProfessorConfirmAttendance() 
         {
-            var stateOfMind = new Professor.MentalState();
+            Professor.MentalState stateOfMind = Professor.MentalState.Pensive;
+            Assert.Equal(Professor.MentalState.Pensive, stateOfMind);
             ProfessorUtils.ConfirmAttendance(ref stateOfMind, new LectureTheatre{
                 OnTimeStudents = 1, LateStudents = 1, ClassSize = 10, CancellationThreshold = 10});
             Assert.Equal(Professor.MentalState.Pensive, stateOfMind);
@@ -74,13 +77,20 @@ namespace lib.Xunit.UnitTests
     namespace moq { 
         using LectureObserver = IObserver<LectureTheatre>;
         using LectureObservable = IObservable<LectureTheatre>;
-        public class NullifyNotifyStaff
+        public delegate void CallBackStructure(List<LectureObserver> staff, LectureTheatre lesson);
+        public class NullifyNotifyStaff :ScheduledClass
         {
-            private static Action _NotifyStaffCallback; 
-            public void SetCallback(Action cb) => _NotifyStaffCallback = cb;
+            private static CallBackStructure _NotifyStaffCallback; 
+            //simplfy constructor
+            public NullifyNotifyStaff () : base( 0,0) {}
+                
+            public void SetCallback(CallBackStructure cb) 
+            {
+                _NotifyStaffCallback = cb;
+            }
             internal static void NotifyStaff(List<LectureObserver> staff, LectureTheatre lesson)
             {
-                _NotifyStaffCallback();
+                _NotifyStaffCallback(staff, lesson);
             }
         }
         public class UnitTestMocks
@@ -92,33 +102,35 @@ namespace lib.Xunit.UnitTests
                 Assert.Equal(1, myClass._Lesson.ClassSize);
                 Assert.Equal(2, myClass._Lesson.CancellationThreshold);
             }
+            //[Fact]
             public void ScheduledClass_RecordArrival()
             {
-               /*  var mockLectureObserver = new Mock<LectureObserver>();
-                mockLectureObserver
-                    .Setup(x => x.OnNext(It.IsAny<LectureTheatre>())) 
-                    .Verifiable() ; */
+                var fnUpdateStatistics=0;
+                var fnNotifyStaff=0;
                 var mockLectureTheatre = new Mock<LectureTheatre>();
-                
-
-                
                 mockLectureTheatre
                     .Setup(x => x.UpdateStatistics(It.IsAny<int>()))
-                    .Callback((int arrivalTime) => Assert.Equal(0,arrivalTime))
+                    .Callback((int arrivalTime) => 
+                    {
+                        Assert.Equal(0,arrivalTime);
+                        fnUpdateStatistics++;
+                    })
                     .Verifiable() ;
+                var myClass = new NullifyNotifyStaff();
+                myClass.SetCallback( (List<LectureObserver> staff, LectureTheatre lesson) => 
+                {
+                    Assert.NotNull(staff);
+                    Assert.NotNull(lesson);
+                    fnNotifyStaff++;
+                });
 
+                //myClass.RecordArrival(0);
 
-                /*var myClass = new NullifyNotifyStaff(1,2);
-                myClass.RecordArrival(0);
-
-
-                myClass._Staff.Add(mockLectureObserver.Object); 
-                Assert.Contains(mockLectureObserver.Object, myClass._Staff); 
-                
-                mockLectureObserver
-                    .Verify(x => x.OnNext(It.IsAny<LectureTheatre>()), 
-                            Times.Once()); */
+                mockLectureTheatre.Verify(x => x.UpdateStatistics(0), Times.Once());
+                Assert.Equal(1, fnUpdateStatistics);
+                Assert.Equal(1, fnNotifyStaff);
             }
+            [Fact]
             public void ScheduledClass_Subscribe()
             {
                 var myClass = new ScheduledClass(1,2);
