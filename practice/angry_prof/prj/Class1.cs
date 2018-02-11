@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 //allow unit testing project to have visibility into private memebers
-[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("lib.Xunit")]
+[assembly: InternalsVisibleToAttribute("lib.Xunit")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 
 namespace Solution.Services {
     using LectureObserver = IObserver<LectureTheatre>;
@@ -50,21 +52,22 @@ namespace Solution.Services {
         //state of mind as public property (not getter/etter) becasue we want to be able to pass by ref
         public MentalState StateOfMind = MentalState.Pensive;
         internal IDisposable _Subscription;
+        internal ProfessorUtils _ProfessorUtils = new ProfessorUtils();
 
         public void Subscribe(ScheduledClass plannedClass) =>
-            ProfessorUtils.Subscribe(ref _Subscription, plannedClass, this);
+            _ProfessorUtils.Subscribe(ref _Subscription, plannedClass, this);
 
         #region IObserver Members
             public virtual void OnNext(LectureTheatre plannedClass) 
             {
-                if (ProfessorUtils.ConfirmAttendance(ref StateOfMind, plannedClass)) Unsubscribe();
+                if (_ProfessorUtils.ConfirmAttendance(ref StateOfMind, plannedClass)) Unsubscribe();
             }
             public virtual void OnCompleted() {} // No implementation.
             public virtual void OnError(Exception e){} // No implementation.
         #endregion IObserver Members    
 
         internal void Unsubscribe() =>
-            ProfessorUtils.Unsubscribe(_Subscription);
+            _ProfessorUtils.Unsubscribe(_Subscription);
     }
 
     public class LectureTheatre {    
@@ -90,6 +93,7 @@ namespace Solution.Services {
     public class ScheduledClass : LectureObservable {   
         internal List<LectureObserver> _Staff = new List<LectureObserver>(); 
         internal LectureTheatre _Lesson = new LectureTheatre();
+        internal ClassUtils _ClassUtils = new ClassUtils();
 
         public ScheduledClass (int expectedClassSize, int classCancellationThreshold) =>        
             _Lesson.InitialiseStatistics(expectedClassSize, classCancellationThreshold);
@@ -97,22 +101,22 @@ namespace Solution.Services {
         public virtual void RecordArrival (int arrivalTime) 
         {
             _Lesson.UpdateStatistics(arrivalTime);        
-            ClassUtils.NotifyStaff(_Staff,_Lesson);
+            _ClassUtils.NotifyStaff(_Staff,_Lesson);
         }
         #region IObservable Members
             public virtual IDisposable Subscribe(LectureObserver lecturer)
             {
-                ClassUtils.RecordSubscription(_Staff, lecturer);            
+                _ClassUtils.RecordSubscription(_Staff, lecturer);            
                 // Provide observer with existing data.
                 lecturer.OnNext(_Lesson);
-                return ClassUtils.CreateUnsubscriber(_Staff, lecturer);
+                return _ClassUtils.CreateUnsubscriber(_Staff, lecturer);
             }
         #endregion IObservable Members
     }    
 
-    public class ProfessorUtils 
+    internal class ProfessorUtils 
     {    
-        internal static bool ConfirmAttendance(ref Professor.MentalState stateOfMind, LectureTheatre plannedClass) 
+        internal virtual bool ConfirmAttendance(ref Professor.MentalState stateOfMind, LectureTheatre plannedClass) 
         {
             if (plannedClass.OnTimeStudents >= plannedClass.CancellationThreshold) {
                 stateOfMind = Professor.MentalState.Calm;              
@@ -129,31 +133,31 @@ namespace Solution.Services {
             // Attendence is incomplete so need more data.
             return false; 
         }
-        internal static void Unsubscribe(IDisposable subscription) =>
+        internal virtual void Unsubscribe(IDisposable subscription) =>
             subscription.Dispose();
         
-        internal static void Subscribe(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber) =>
+        internal virtual void Subscribe(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber) =>
             subscription = plannedClass.Subscribe(subscriber);        
     }
 
-    internal static class ClassUtils {   
-        internal static void NotifyStaff (List<LectureObserver> staff, LectureTheatre lesson) 
+    internal class ClassUtils {   
+        internal virtual void NotifyStaff (List<LectureObserver> staff, LectureTheatre lesson) 
         {
             // Copy the list before enumerating in case one observer ragequits when they see what thet don't like.
             List<LectureObserver> staffClone = new List<LectureObserver>(staff);
             foreach (var lecturer in staffClone)
                 lecturer.OnNext(lesson);
         }
-        internal static void RecordSubscription (List<LectureObserver> staff, LectureObserver lecturer) 
+        internal virtual void RecordSubscription (List<LectureObserver> staff, LectureObserver lecturer) 
         {
             // Check whether lecturer is already registered. If not, add it.
             if (! staff.Contains(lecturer)) staff.Add(lecturer);
         }
-        internal static void Unsubscribe (List<LectureObserver> staff, LectureObserver lecturer) 
+        internal virtual void Unsubscribe (List<LectureObserver> staff, LectureObserver lecturer) 
         {    
             if (staff.Contains(lecturer)) staff.Remove(lecturer);
         }
-        internal static IDisposable CreateUnsubscriber (List<LectureObserver> staff, LectureObserver lecturer) =>
+        internal virtual IDisposable CreateUnsubscriber (List<LectureObserver> staff, LectureObserver lecturer) =>
             new UnsubscriberLambda(() => Unsubscribe(staff, lecturer) );
     }
 

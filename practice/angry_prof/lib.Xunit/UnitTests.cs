@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Xunit;
+using Xunit.Abstractions;
 using Solution.Services;
 using Moq;
 
@@ -57,18 +58,19 @@ namespace lib.Xunit.UnitTests
         //[Fact]
         public void TestProfessorConfirmAttendance() 
         {
+            var testClass = new ProfessorUtils();
             Professor.MentalState stateOfMind = Professor.MentalState.Pensive;
             Assert.Equal(Professor.MentalState.Pensive, stateOfMind);
-            ProfessorUtils.ConfirmAttendance(ref stateOfMind, new LectureTheatre{
+            testClass.ConfirmAttendance(ref stateOfMind, new LectureTheatre{
                 OnTimeStudents = 1, LateStudents = 1, ClassSize = 10, CancellationThreshold = 10});
             Assert.Equal(Professor.MentalState.Pensive, stateOfMind);
-            ProfessorUtils.ConfirmAttendance(ref stateOfMind, new LectureTheatre{
+            testClass.ConfirmAttendance(ref stateOfMind, new LectureTheatre{
                 OnTimeStudents = 1, LateStudents = 9, ClassSize = 10, CancellationThreshold = 10});
             Assert.Equal(Professor.MentalState.Calm, stateOfMind);
-            ProfessorUtils.ConfirmAttendance(ref stateOfMind, new LectureTheatre{ 
+            testClass.ConfirmAttendance(ref stateOfMind, new LectureTheatre{ 
                 OnTimeStudents = 9, LateStudents = 1, ClassSize = 10, CancellationThreshold = 10});
             Assert.Equal(Professor.MentalState.Calm, stateOfMind);
-            ProfessorUtils.ConfirmAttendance(ref stateOfMind, new LectureTheatre{ 
+            testClass.ConfirmAttendance(ref stateOfMind, new LectureTheatre{ 
                 OnTimeStudents = 9, LateStudents = 1, ClassSize = 10, CancellationThreshold = 0});
             Assert.Equal(Professor.MentalState.Angry, stateOfMind);
         }
@@ -77,24 +79,11 @@ namespace lib.Xunit.UnitTests
     namespace moq { 
         using LectureObserver = IObserver<LectureTheatre>;
         using LectureObservable = IObservable<LectureTheatre>;
-        public delegate void CallBackStructure(List<LectureObserver> staff, LectureTheatre lesson);
-        public class NullifyNotifyStaff :ScheduledClass
+        public class UnitTestMocks : TestHelper
         {
-            private static CallBackStructure _NotifyStaffCallback; 
-            //simplfy constructor
-            public NullifyNotifyStaff () : base( 0,0) {}
-                
-            public void SetCallback(CallBackStructure cb) 
-            {
-                _NotifyStaffCallback = cb;
-            }
-            internal static void NotifyStaff(List<LectureObserver> staff, LectureTheatre lesson)
-            {
-                _NotifyStaffCallback(staff, lesson);
-            }
-        }
-        public class UnitTestMocks
-        {
+            public UnitTestMocks (ITestOutputHelper output)
+            : base(output) { }
+            
             [Fact]  
             public void ScheduledClass_Constructor()
             {
@@ -102,33 +91,32 @@ namespace lib.Xunit.UnitTests
                 Assert.Equal(1, myClass._Lesson.ClassSize);
                 Assert.Equal(2, myClass._Lesson.CancellationThreshold);
             }
-            //[Fact]
+            [Fact]
             public void ScheduledClass_RecordArrival()
             {
-                var fnUpdateStatistics=0;
-                var fnNotifyStaff=0;
+                var testClass = new ScheduledClass(0, 0);
+
                 var mockLectureTheatre = new Mock<LectureTheatre>();
                 mockLectureTheatre
                     .Setup(x => x.UpdateStatistics(It.IsAny<int>()))
-                    .Callback((int arrivalTime) => 
-                    {
-                        Assert.Equal(0,arrivalTime);
-                        fnUpdateStatistics++;
-                    })
                     .Verifiable() ;
-                var myClass = new NullifyNotifyStaff();
-                myClass.SetCallback( (List<LectureObserver> staff, LectureTheatre lesson) => 
-                {
-                    Assert.NotNull(staff);
-                    Assert.NotNull(lesson);
-                    fnNotifyStaff++;
-                });
+                var mockClassUtils = new Mock<ClassUtils>();
+                testClass._ClassUtils = mockClassUtils.Object;
+                mockClassUtils
+                    .Setup(x => x.NotifyStaff(It.IsAny<List<LectureObserver>>(), It.IsAny<LectureTheatre>())) 
+                    .Verifiable() ;                    
+                testClass._Lesson = mockLectureTheatre.Object;
 
-                //myClass.RecordArrival(0);
+                testClass.RecordArrival(0);
 
-                mockLectureTheatre.Verify(x => x.UpdateStatistics(0), Times.Once());
-                Assert.Equal(1, fnUpdateStatistics);
-                Assert.Equal(1, fnNotifyStaff);
+                mockLectureTheatre.Verify(x => x.UpdateStatistics(It.IsAny<int>()), 
+                                          Times.Once(),
+                                          "Statistics were not updated when arrival was being recorded.");
+                mockClassUtils.Verify(x => x.NotifyStaff(It.IsAny<List<LectureObserver>>(), It.IsAny<LectureTheatre>()), 
+                                      Times.Once(),
+                                      "Staff were not notiified when arrival was being recorded.");
+                mockLectureTheatre.VerifyNoOtherCalls();
+                mockClassUtils.VerifyNoOtherCalls();
             }
             [Fact]
             public void ScheduledClass_Subscribe()
@@ -136,8 +124,7 @@ namespace lib.Xunit.UnitTests
                 var myClass = new ScheduledClass(1,2);
                 var mockLectureObserver = new Mock<LectureObserver>();
                 mockLectureObserver
-                    .Setup(x => x.OnNext(It.IsAny<LectureTheatre>()))/* 
-                    .Returns(void) */;
+                    .Setup(x => x.OnNext(It.IsAny<LectureTheatre>()));
                 
                 Assert.DoesNotContain(mockLectureObserver.Object, myClass._Staff); 
                 IDisposable rageQuit = myClass.Subscribe(mockLectureObserver.Object); 
