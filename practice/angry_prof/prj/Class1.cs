@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
+
+//allow unit testing project to have visibility into private memebers
+[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("lib.Xunit")]
 
 namespace Solution.Services {
-    using LectureObserver = System.IObserver<LectureTheatre>;
-    using LectureObservable = System.IObservable<LectureTheatre>;
+    using LectureObserver = IObserver<LectureTheatre>;
+    using LectureObservable = IObservable<LectureTheatre>;
 
     public class Solution {
     //https://www.hackerrank.com/challenges/angry-professor/problem
@@ -64,13 +65,13 @@ namespace Solution.Services {
     }
 
     public class ScheduledClass : LectureObservable {   
-        private List<LectureObserver> _Staff = new List<LectureObserver>(); 
-        private LectureTheatre _Lesson = new LectureTheatre();
+        internal List<LectureObserver> _Staff = new List<LectureObserver>(); 
+        internal LectureTheatre _Lesson = new LectureTheatre();
 
         public ScheduledClass (int expectedClassSize, int classCancellationThreshold) =>        
             _Lesson.InitialiseStatistics(expectedClassSize, classCancellationThreshold);
         
-        public void RecordArrival (int arrivalTime) 
+        public virtual void RecordArrival (int arrivalTime) 
         {
             _Lesson.UpdateStatistics(arrivalTime);        
             NotifyStaff(_Staff,_Lesson);
@@ -101,7 +102,7 @@ namespace Solution.Services {
         {    
             if (staff.Contains(lecturer)) staff.Remove(lecturer);
         }
-        private static IDisposable CreateUnsubscriber (List<LectureObserver> staff, LectureObserver lecturer) =>
+        internal static IDisposable CreateUnsubscriber (List<LectureObserver> staff, LectureObserver lecturer) =>
             new UnsubscriberLambda(() => Unsubscribe(staff, lecturer) );
     }
 
@@ -110,7 +111,7 @@ namespace Solution.Services {
         public enum MentalState { Calm, Pensive, Angry}
         //state of mind as public property (not getter/etter) becasue we want to be able to pass by ref
         public MentalState StateOfMind = MentalState.Pensive;
-        private IDisposable _Subscription;
+        internal IDisposable _Subscription;
 
         public void Subscribe(ScheduledClass plannedClass) =>
             SubscribeT(ref _Subscription, plannedClass, this);
@@ -124,7 +125,7 @@ namespace Solution.Services {
             public virtual void OnError(Exception e){} // No implementation.
         #endregion IObserver Members    
 
-        internal bool ConfirmAttendance(ref MentalState stateOfMind, LectureTheatre plannedClass) 
+        internal static bool ConfirmAttendance(ref MentalState stateOfMind, LectureTheatre plannedClass) 
         {
             if (plannedClass.OnTimeStudents >= plannedClass.CancellationThreshold) {
                 stateOfMind = MentalState.Calm;              
@@ -141,13 +142,13 @@ namespace Solution.Services {
             // Attendence is incomplete so need more data.
             return false; 
         }
-        internal void UnsubscribeT(IDisposable subscription) =>
+        internal static void UnsubscribeT(IDisposable subscription) =>
             subscription.Dispose();
         
-        internal void SubscribeT(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber) =>
+        internal static void SubscribeT(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber) =>
             subscription = plannedClass.Subscribe(subscriber);
         
-        private void Unsubscribe() =>
+        internal void Unsubscribe() =>
             UnsubscribeT(_Subscription);
     }
 
