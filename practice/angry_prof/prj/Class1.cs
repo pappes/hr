@@ -43,6 +43,29 @@ namespace Solution.Services {
             stdout.Flush();
         }
     }
+    
+    public class Professor : LectureObserver 
+    {    
+        public enum MentalState { Calm, Pensive, Angry}
+        //state of mind as public property (not getter/etter) becasue we want to be able to pass by ref
+        public MentalState StateOfMind = MentalState.Pensive;
+        internal IDisposable _Subscription;
+
+        public void Subscribe(ScheduledClass plannedClass) =>
+            ProfessorUtils.Subscribe(ref _Subscription, plannedClass, this);
+
+        #region IObserver Members
+            public virtual void OnNext(LectureTheatre plannedClass) 
+            {
+                if (ProfessorUtils.ConfirmAttendance(ref StateOfMind, plannedClass)) Unsubscribe();
+            }
+            public virtual void OnCompleted() {} // No implementation.
+            public virtual void OnError(Exception e){} // No implementation.
+        #endregion IObserver Members    
+
+        internal void Unsubscribe() =>
+            ProfessorUtils.Unsubscribe(_Subscription);
+    }
 
     public class LectureTheatre {    
         public int OnTimeStudents { get; set; } = 0;
@@ -62,7 +85,7 @@ namespace Solution.Services {
             else
                 LateStudents++;   
         }
-    }
+    }    
 
     public class ScheduledClass : LectureObservable {   
         internal List<LectureObserver> _Staff = new List<LectureObserver>(); 
@@ -74,18 +97,46 @@ namespace Solution.Services {
         public virtual void RecordArrival (int arrivalTime) 
         {
             _Lesson.UpdateStatistics(arrivalTime);        
-            NotifyStaff(_Staff,_Lesson);
+            ClassUtils.NotifyStaff(_Staff,_Lesson);
         }
         #region IObservable Members
-            public IDisposable Subscribe(LectureObserver lecturer)
+            public virtual IDisposable Subscribe(LectureObserver lecturer)
             {
-                RecordSubscription(_Staff, lecturer);            
+                ClassUtils.RecordSubscription(_Staff, lecturer);            
                 // Provide observer with existing data.
                 lecturer.OnNext(_Lesson);
-                return CreateUnsubscriber(_Staff, lecturer);
+                return ClassUtils.CreateUnsubscriber(_Staff, lecturer);
             }
         #endregion IObservable Members
+    }    
 
+    public class ProfessorUtils 
+    {    
+        internal static bool ConfirmAttendance(ref Professor.MentalState stateOfMind, LectureTheatre plannedClass) 
+        {
+            if (plannedClass.OnTimeStudents >= plannedClass.CancellationThreshold) {
+                stateOfMind = Professor.MentalState.Calm;              
+                // Stop watching and get on with the job (even if it causess problems for list enumeration).
+                return true; 
+            } else {
+                if (plannedClass.LateStudents >0 && 
+                    plannedClass.LateStudents >= plannedClass.ClassSize-plannedClass.CancellationThreshold) {
+                    stateOfMind = Professor.MentalState.Angry ;                  
+                    // Ragequit in protest( even if it causess problems for list enumeration).
+                    return true; 
+                } 
+            } 
+            // Attendence is incomplete so need more data.
+            return false; 
+        }
+        internal static void Unsubscribe(IDisposable subscription) =>
+            subscription.Dispose();
+        
+        internal static void Subscribe(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber) =>
+            subscription = plannedClass.Subscribe(subscriber);        
+    }
+
+    internal static class ClassUtils {   
         internal static void NotifyStaff (List<LectureObserver> staff, LectureTheatre lesson) 
         {
             // Copy the list before enumerating in case one observer ragequits when they see what thet don't like.
@@ -104,52 +155,6 @@ namespace Solution.Services {
         }
         internal static IDisposable CreateUnsubscriber (List<LectureObserver> staff, LectureObserver lecturer) =>
             new UnsubscriberLambda(() => Unsubscribe(staff, lecturer) );
-    }
-
-    public class Professor : LectureObserver 
-    {    
-        public enum MentalState { Calm, Pensive, Angry}
-        //state of mind as public property (not getter/etter) becasue we want to be able to pass by ref
-        public MentalState StateOfMind = MentalState.Pensive;
-        internal IDisposable _Subscription;
-
-        public void Subscribe(ScheduledClass plannedClass) =>
-            SubscribeT(ref _Subscription, plannedClass, this);
-
-        #region IObserver Members
-            public virtual void OnNext(LectureTheatre plannedClass) 
-            {
-                if (ConfirmAttendance(ref StateOfMind, plannedClass)) Unsubscribe();
-            }
-            public virtual void OnCompleted() {} // No implementation.
-            public virtual void OnError(Exception e){} // No implementation.
-        #endregion IObserver Members    
-
-        internal static bool ConfirmAttendance(ref MentalState stateOfMind, LectureTheatre plannedClass) 
-        {
-            if (plannedClass.OnTimeStudents >= plannedClass.CancellationThreshold) {
-                stateOfMind = MentalState.Calm;              
-                // Stop watching and get on with the job (even if it causess problems for list enumeration).
-                return true; 
-            } else {
-                if (plannedClass.LateStudents >0 && 
-                    plannedClass.LateStudents >= plannedClass.ClassSize-plannedClass.CancellationThreshold) {
-                    stateOfMind = MentalState.Angry ;                  
-                    // Ragequit in protest( even if it causess problems for list enumeration).
-                    return true; 
-                } 
-            } 
-            // Attendence is incomplete so need more data.
-            return false; 
-        }
-        internal static void UnsubscribeT(IDisposable subscription) =>
-            subscription.Dispose();
-        
-        internal static void SubscribeT(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber) =>
-            subscription = plannedClass.Subscribe(subscriber);
-        
-        internal void Unsubscribe() =>
-            UnsubscribeT(_Subscription);
     }
 
     public class UnsubscriberLambda :IDisposable
