@@ -100,7 +100,7 @@ namespace lib.Xunit.UnitTests
                 mockLectureTheatre
                     .Setup(x => x.UpdateStatistics(It.IsAny<int>()))
                     .Verifiable() ;
-                var mockClassUtils = new Mock<ClassUtils>();
+                var mockClassUtils = new Mock<IClassUtils>();
                 testClass._ClassUtils = mockClassUtils.Object;
                 mockClassUtils
                     .Setup(x => x.NotifyStaff(It.IsAny<List<LectureObserver>>(), It.IsAny<LectureTheatre>())) 

@@ -52,7 +52,7 @@ namespace Solution.Services {
         //state of mind as public property (not getter/etter) becasue we want to be able to pass by ref
         public MentalState StateOfMind = MentalState.Pensive;
         internal IDisposable _Subscription;
-        internal ProfessorUtils _ProfessorUtils = new ProfessorUtils();
+        internal IProfessorUtils _ProfessorUtils = new ProfessorUtils();
 
         public void Subscribe(ScheduledClass plannedClass) =>
             _ProfessorUtils.Subscribe(ref _Subscription, plannedClass, this);
@@ -93,7 +93,7 @@ namespace Solution.Services {
     public class ScheduledClass : LectureObservable {   
         internal List<LectureObserver> _Staff = new List<LectureObserver>(); 
         internal LectureTheatre _Lesson = new LectureTheatre();
-        internal ClassUtils _ClassUtils = new ClassUtils();
+        internal IClassUtils _ClassUtils = new ClassUtils();
 
         public ScheduledClass (int expectedClassSize, int classCancellationThreshold) =>        
             _Lesson.InitialiseStatistics(expectedClassSize, classCancellationThreshold);
@@ -114,9 +114,15 @@ namespace Solution.Services {
         #endregion IObservable Members
     }    
 
-    internal class ProfessorUtils 
+    public interface IProfessorUtils 
     {    
-        internal virtual bool ConfirmAttendance(ref Professor.MentalState stateOfMind, LectureTheatre plannedClass) 
+        bool ConfirmAttendance(ref Professor.MentalState stateOfMind, LectureTheatre plannedClass);
+        void Unsubscribe(IDisposable subscription);
+        void Subscribe(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber);
+    }
+    internal class ProfessorUtils : IProfessorUtils
+    {    
+        public bool ConfirmAttendance(ref Professor.MentalState stateOfMind, LectureTheatre plannedClass) 
         {
             if (plannedClass.OnTimeStudents >= plannedClass.CancellationThreshold) {
                 stateOfMind = Professor.MentalState.Calm;              
@@ -133,35 +139,44 @@ namespace Solution.Services {
             // Attendence is incomplete so need more data.
             return false; 
         }
-        internal virtual void Unsubscribe(IDisposable subscription) =>
+        public virtual void Unsubscribe(IDisposable subscription) =>
             subscription.Dispose();
         
-        internal virtual void Subscribe(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber) =>
+        public virtual void Subscribe(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber) =>
             subscription = plannedClass.Subscribe(subscriber);        
     }
 
-    internal class ClassUtils {   
-        internal virtual void NotifyStaff (List<LectureObserver> staff, LectureTheatre lesson) 
+    public interface IClassUtils 
+    {   
+        void NotifyStaff (List<LectureObserver> staff, LectureTheatre lesson) ;
+        void RecordSubscription (List<LectureObserver> staff, LectureObserver lecturer) ;
+        void Unsubscribe (List<LectureObserver> staff, LectureObserver lecturer) ;
+        IDisposable CreateUnsubscriber (List<LectureObserver> staff, LectureObserver lecturer);
+    }
+
+    internal class ClassUtils :IClassUtils 
+    {   
+        public void NotifyStaff (List<LectureObserver> staff, LectureTheatre lesson) 
         {
             // Copy the list before enumerating in case one observer ragequits when they see what thet don't like.
             List<LectureObserver> staffClone = new List<LectureObserver>(staff);
             foreach (var lecturer in staffClone)
                 lecturer.OnNext(lesson);
         }
-        internal virtual void RecordSubscription (List<LectureObserver> staff, LectureObserver lecturer) 
+        public void RecordSubscription (List<LectureObserver> staff, LectureObserver lecturer) 
         {
             // Check whether lecturer is already registered. If not, add it.
             if (! staff.Contains(lecturer)) staff.Add(lecturer);
         }
-        internal virtual void Unsubscribe (List<LectureObserver> staff, LectureObserver lecturer) 
+        public void Unsubscribe (List<LectureObserver> staff, LectureObserver lecturer) 
         {    
             if (staff.Contains(lecturer)) staff.Remove(lecturer);
         }
-        internal virtual IDisposable CreateUnsubscriber (List<LectureObserver> staff, LectureObserver lecturer) =>
+        public IDisposable CreateUnsubscriber (List<LectureObserver> staff, LectureObserver lecturer) =>
             new UnsubscriberLambda(() => Unsubscribe(staff, lecturer) );
     }
 
-    public class UnsubscriberLambda :IDisposable
+    public class UnsubscriberLambda : IDisposable
     {
         private Action _DisposeCallback;
 
