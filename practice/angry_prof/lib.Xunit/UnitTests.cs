@@ -87,38 +87,53 @@ namespace lib.Xunit.UnitTests
             [Fact]  
             public void ScheduledClass_Constructor()
             {
-                var myClass = new ScheduledClass(1,2);
-                Assert.Equal(1, myClass._Lesson.ClassSize);
-                Assert.Equal(2, myClass._Lesson.CancellationThreshold);
+                //TODO include new constructior optional parameters
+                var mockLectureTheatre = new Mock<LectureTheatre>();
+                mockLectureTheatre
+                    .Setup(x => x.InitialiseStatistics(It.IsAny<int>(), It.IsAny<int>()))
+                    .Verifiable() ;
+                var mockClassUtils = new Mock<IClassUtils>();
+                var myClass = new ScheduledClass(expectedClassSize: 1, 
+                                                 classCancellationThreshold: 2, 
+                                                 lectureTheatre: mockLectureTheatre.Object);
+                mockLectureTheatre.Verify(x => x.InitialiseStatistics(It.IsAny<int>(), It.IsAny<int>()), 
+                                          Times.Once(),
+                                          "Statistics were not initialised hwen scheduled calss was initialised.");
             }
             [Fact]
             public void ScheduledClass_RecordArrival()
             {
-                var testClass = new ScheduledClass(0, 0);
-
                 var mockLectureTheatre = new Mock<LectureTheatre>();
                 mockLectureTheatre
                     .Setup(x => x.UpdateStatistics(It.IsAny<int>()))
                     .Verifiable() ;
-                var mockClassUtils = new Mock<IClassUtils>();
-                testClass._ClassUtils = mockClassUtils.Object;
+                 mockLectureTheatre
+                    .Setup(x => x.InitialiseStatistics(It.IsAny<int>(), It.IsAny<int>()))
+                    .Verifiable() ;
+                var mockClassUtils = new Mock<IClassUtils>(); 
                 mockClassUtils
                     .Setup(x => x.NotifyStaff(It.IsAny<List<LectureObserver>>(), It.IsAny<LectureTheatre>())) 
                     .Verifiable() ;                    
-                testClass._Lesson = mockLectureTheatre.Object;
+                var testClass = new ScheduledClass(expectedClassSize: 0, 
+                                                   classCancellationThreshold: 0, 
+                                                   classUtils: mockClassUtils.Object, 
+                                                   lectureTheatre: mockLectureTheatre.Object);                                                   
 
                 testClass.RecordArrival(0);
 
                 mockLectureTheatre.Verify(x => x.UpdateStatistics(It.IsAny<int>()), 
                                           Times.Once(),
                                           "Statistics were not updated when arrival was being recorded.");
+                mockLectureTheatre.Verify(x => x.InitialiseStatistics(It.IsAny<int>(), It.IsAny<int>()), 
+                                          Times.Once(),
+                                          "Statistics were not initialised hwen scheduled calss was initialised.");
                 mockClassUtils.Verify(x => x.NotifyStaff(It.IsAny<List<LectureObserver>>(), It.IsAny<LectureTheatre>()), 
                                       Times.Once(),
-                                      "Staff were not notiified when arrival was being recorded.");
-                mockLectureTheatre.VerifyNoOtherCalls();
-                mockClassUtils.VerifyNoOtherCalls();
+                                      "Staff were not notified when arrival was being recorded.");
+                 mockLectureTheatre.VerifyNoOtherCalls();
+                mockClassUtils.VerifyNoOtherCalls(); 
             }
-            [Fact]
+           /*  [Fact]
             public void ScheduledClass_Subscribe()
             {
                 var myClass = new ScheduledClass(1,2);
@@ -126,10 +141,34 @@ namespace lib.Xunit.UnitTests
                 mockLectureObserver
                     .Setup(x => x.OnNext(It.IsAny<LectureTheatre>()));
                 
+                /*Assert.DoesNotContain(mockLectureObserver.Object, myClass._Staff); 
+                IDisposable rageQuit = myClass.Subscribe(mockLectureObserver.Object); 
+                Assert.Contains(mockLectureObserver.Object, myClass._Staff);   * /
+                
+                var mockLectureObserver = new Mock<LectureObserver>();
+                mockLectureObserver
+                    .Setup(x => x.OnNext(It.IsAny<LectureTheatre>()));
+                var mockStaff = new Mock<List<LectureObserver>>();
+                mockStaff
+                    .Setup(x => x.OnNext(It.IsAny<LectureTheatre>()));
+                    List<LectureObserver>
+                var myClass = new ScheduledClass(expectedClassSize: 1, 
+                                                 classCancellationThreshold: 2, 
+                                                 lectureTheatre: mockLectureTheatre.Object);
+                
                 Assert.DoesNotContain(mockLectureObserver.Object, myClass._Staff); 
                 IDisposable rageQuit = myClass.Subscribe(mockLectureObserver.Object); 
                 Assert.Contains(mockLectureObserver.Object, myClass._Staff); 
-            }
+                
+                
+                
+                
+                /*
+                _ClassUtils.RecordSubscription(_Staff, lecturer);            
+                // Provide observer with existing data.
+                lecturer.OnNext(_Lesson);
+                return _ClassUtils.CreateUnsubscriber(_Staff, lecturer);* / 
+            } */
         }
     }
 

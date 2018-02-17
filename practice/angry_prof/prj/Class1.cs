@@ -50,9 +50,16 @@ namespace Solution.Services {
     {    
         public enum MentalState { Calm, Pensive, Angry}
         //state of mind as public property (not getter/etter) becasue we want to be able to pass by ref
-        public MentalState StateOfMind = MentalState.Pensive;
+        public MentalState StateOfMind;
         internal IDisposable _Subscription;
-        internal IProfessorUtils _ProfessorUtils = new ProfessorUtils();
+        private readonly IProfessorUtils _ProfessorUtils;
+
+        public Professor (MentalState mentalState = MentalState.Pensive,
+                          IProfessorUtils professorUtils = null) 
+        {
+            _ProfessorUtils = professorUtils ?? new ProfessorUtils();
+            StateOfMind = mentalState;
+        }
 
         public void Subscribe(ScheduledClass plannedClass) =>
             _ProfessorUtils.Subscribe(ref _Subscription, plannedClass, this);
@@ -71,10 +78,10 @@ namespace Solution.Services {
     }
 
     public class LectureTheatre {    
-        public int OnTimeStudents { get; set; } = 0;
-        public int LateStudents { get; set; } = 0;   
-        public int ClassSize { get; set; }
-        public int CancellationThreshold { get; set; }
+        public virtual int OnTimeStudents { get; protected internal  set; } = 0;
+        public virtual int LateStudents { get; protected internal  set; } = 0;   
+        public virtual int ClassSize { get; protected internal set; }
+        public virtual int CancellationThreshold { get; protected internal set; }
 
         public virtual void InitialiseStatistics (int expectedClassSize, int classCancellationThreshold) 
         {
@@ -91,12 +98,21 @@ namespace Solution.Services {
     }    
 
     public class ScheduledClass : LectureObservable {   
-        internal List<LectureObserver> _Staff = new List<LectureObserver>(); 
-        internal LectureTheatre _Lesson = new LectureTheatre();
-        internal IClassUtils _ClassUtils = new ClassUtils();
-
-        public ScheduledClass (int expectedClassSize, int classCancellationThreshold) =>        
+        private LectureTheatre _Lesson;
+        private IClassUtils _ClassUtils;
+        private List<LectureObserver> _Staff; 
+        
+        public ScheduledClass (int expectedClassSize, 
+                               int classCancellationThreshold, 
+                               IClassUtils classUtils = null,
+                               LectureTheatre lectureTheatre = null,
+                               List<LectureObserver> observers = null)
+        {
+            _ClassUtils = classUtils ??  new ClassUtils();
+            _Staff = observers ??  new List<LectureObserver>();
+            _Lesson = lectureTheatre ??  new LectureTheatre();
             _Lesson.InitialiseStatistics(expectedClassSize, classCancellationThreshold);
+        }
         
         public virtual void RecordArrival (int arrivalTime) 
         {
@@ -120,6 +136,15 @@ namespace Solution.Services {
         void Unsubscribe(IDisposable subscription);
         void Subscribe(ref IDisposable subscription, ScheduledClass plannedClass, Professor subscriber);
     }
+
+    public interface IClassUtils 
+    {   
+        void NotifyStaff (List<LectureObserver> staff, LectureTheatre lesson) ;
+        void RecordSubscription (List<LectureObserver> staff, LectureObserver lecturer) ;
+        void Unsubscribe (List<LectureObserver> staff, LectureObserver lecturer) ;
+        IDisposable CreateUnsubscriber (List<LectureObserver> staff, LectureObserver lecturer);
+    }
+
     internal class ProfessorUtils : IProfessorUtils
     {    
         public bool ConfirmAttendance(ref Professor.MentalState stateOfMind, LectureTheatre plannedClass) 
@@ -146,15 +171,7 @@ namespace Solution.Services {
             subscription = plannedClass.Subscribe(subscriber);        
     }
 
-    public interface IClassUtils 
-    {   
-        void NotifyStaff (List<LectureObserver> staff, LectureTheatre lesson) ;
-        void RecordSubscription (List<LectureObserver> staff, LectureObserver lecturer) ;
-        void Unsubscribe (List<LectureObserver> staff, LectureObserver lecturer) ;
-        IDisposable CreateUnsubscriber (List<LectureObserver> staff, LectureObserver lecturer);
-    }
-
-    internal class ClassUtils :IClassUtils 
+    internal class ClassUtils : IClassUtils 
     {   
         public void NotifyStaff (List<LectureObserver> staff, LectureTheatre lesson) 
         {
