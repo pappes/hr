@@ -1,0 +1,98 @@
+using System.Text;
+using Xunit;
+using Xunit.Abstractions;
+using Solution.Services;
+using Unity;
+
+namespace lib.Xunit.SystemTests
+{
+    public class UnitTestTheories : TestHelper
+    {
+        IUnityContainer _container;
+        ISolution       _solution;
+
+        public UnitTestTheories (ITestOutputHelper output)
+        : base(output) 
+        {            
+            _container = new UnityContainer();
+            ContainerBootstrapper.RegisterTypes(_container);
+            _solution = _container.Resolve<ISolution>();
+         }
+
+
+        [Theory]
+        [InlineData("NO", "1\r\n1 1\r\n0 0")]
+        [InlineData("NO", "1\r\n1 1\r\n0")]
+        [InlineData("NO", "1\r\n10 5\r\n-4 -3 -2 -1 0 1 2 3 4 5 6")]
+        [InlineData("NO", "1\r\n1 1\r\n0")]
+        [InlineData("YES", "1\r\n10 5\r\n-3 -2 -1 0 1 2 3 4 5 6")]
+        [InlineData("YES", "1\r\n1 1\r\n1")]
+        [InlineData("NO", "1\r\n10 5\r\n-2 -1 0 1")]
+        [InlineData(
+@"YES
+NO", 
+@"2
+4 3
+-1 -3 4 2
+4 2
+0 -1 2 1")]
+
+        public void TestProff(string expectedResult, string testData)
+        {
+            string actualResult = TestHelper.StreamDataToTestHarness(testData, _solution.TestHarness); 
+            Assert.Equal(expectedResult, actualResult);
+        }
+
+    }
+
+    public class UnitTestFacts : TestHelper
+    {
+        IUnityContainer _container;
+        ISolution       _solution;
+        
+        public UnitTestFacts (ITestOutputHelper output)
+        : base(output) 
+        {            
+            _container = new UnityContainer();
+            ContainerBootstrapper.RegisterTypes(_container);
+            _solution = _container.Resolve<ISolution>();
+         }
+
+        [Fact]
+        public void TestMaxClassOK()
+        {
+            TestLargeClass();
+        }
+        public void TestMaxClassFail()
+        {
+            TestLargeClass(lastStudentTime: 1);
+        }
+        public void TestSuperLargeClass()
+        {
+            TestLargeClass(classSize: 10000);
+        }
+        public void TestLargeClass(int classSize = 1000, int lastStudentTime = default(int))
+        {
+            //construct a test case dynamically by building up the input and output strings
+            var combinedResults = ""; 
+            char[] charsToTrim = {'\r', '\n', ' '};
+            var maxTests = 10;
+            var threshold = classSize;
+            var expectedResult = lastStudentTime >0 ? "YES": "NO";
+            //start the string builder big enough to hold the final sring size
+            StringBuilder testData = new StringBuilder("", maxTests*classSize*2+maxTests*15);
+            testData.Append( $"{maxTests}\r\n");
+    //XUnitWriteLine($"maxTests:{maxTests} classSize:{classSize} threshold:{threshold} testData:{testData}");
+            for (var i=0; i< maxTests; i++){
+                testData.Append($"{classSize} {threshold}\r\n");
+                for (var j=0; j<classSize; j++){
+                    testData.Append( j<classSize-1 ? "0 " : lastStudentTime.ToString() );
+                }
+                testData.AppendLine();
+                combinedResults = combinedResults + $"{expectedResult}\r\n";
+            }
+            string actualResult = TestHelper.StreamDataToTestHarness(testData.ToString(), _solution.TestHarness);
+            Assert.Equal(combinedResults.TrimEnd(charsToTrim), actualResult.TrimEnd(charsToTrim));
+        }
+    }
+}

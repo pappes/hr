@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "prj", "prj\prj.csproj", "{1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lib.Xunit", "lib.Xunit\lib.Xunit.csproj", "{E1036620-5CFD-492F-9D14-E9E47A5CA697}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "prj", "unity-prj\prj.csproj", "{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{E1036620-5CFD-492F-9D14-E9E47A5CA697}.Release|x64.Build.0 = Release|x64
 		{E1036620-5CFD-492F-9D14-E9E47A5CA697}.Release|x86.ActiveCfg = Release|x86
 		{E1036620-5CFD-492F-9D14-E9E47A5CA697}.Release|x86.Build.0 = Release|x86
+		{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}.Debug|x64.ActiveCfg = Debug|x64
+		{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}.Debug|x64.Build.0 = Debug|x64
+		{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}.Debug|x86.ActiveCfg = Debug|x86
+		{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}.Debug|x86.Build.0 = Debug|x86
+		{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}.Release|x64.ActiveCfg = Release|x64
+		{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}.Release|x64.Build.0 = Release|x64
+		{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}.Release|x86.ActiveCfg = Release|x86
+		{5E14D217-E6CF-4EB9-A1F9-702C9DACC696}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 EndGlobal
