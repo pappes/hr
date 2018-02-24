@@ -2,7 +2,7 @@ using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 using Solution.Services;
-using Unity;
+using Microsoft.Practices.Unity;
 
 namespace lib.Xunit.SystemTests
 {
@@ -49,7 +49,7 @@ NO",
     {
         IUnityContainer _container;
         ISolution       _solution;
-        
+
         public UnitTestFacts (ITestOutputHelper output)
         : base(output) 
         {            

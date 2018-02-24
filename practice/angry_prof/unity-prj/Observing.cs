@@ -1,12 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Unity;
+using System.Collections.Generic;
 
-//allow unit testing project to have visibility into private memebers
-[assembly: InternalsVisibleToAttribute("lib.Xunit")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+//allow unit testing project to have visibility into private members
+[assembly: InternalsVisibleToAttribute("lib.Xunit")]        //Visibility for XUnit
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]  //visibility for Moq
 
 namespace Solution.Services {
     using LectureObserver = IObserver<LectureTheatre>;
@@ -112,5 +110,28 @@ namespace Solution.Services {
                 return _ClassUtils.CreateUnsubscriber(_Staff, lecturer);
             }
         #endregion IObservable Members
-    }    
+    }  
+
+    //inspired by https://stackoverflow.com/questions/1943576/is-there-a-pattern-for-initializing-objects-created-via-a-di-container
+    public interface IScheduledClassFactory
+    {
+        IScheduledClass Create( int expectedClassSize, 
+                                int classCancellationThreshold);
+    }
+    public class ScheduledClassFactory : IScheduledClassFactory
+    {
+        private IClassUtils _ClassUtils;
+        public ScheduledClassFactory (IClassUtils classUtils) =>
+            _ClassUtils = classUtils;
+
+        public IScheduledClass Create( int expectedClassSize, 
+                                       int classCancellationThreshold)
+        {
+            var lesson = new LectureTheatre();
+            lesson.InitialiseStatistics(expectedClassSize:expectedClassSize, 
+                                        classCancellationThreshold:classCancellationThreshold);
+            return new ScheduledClass(lectureTheatre: lesson, 
+                                      classUtils:_ClassUtils);
+        }
+    }  
 }

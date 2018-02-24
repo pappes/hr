@@ -1,16 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Unity;
+using Microsoft.Practices.Unity;
 
 //allow unit testing project to have visibility into private memebers
-[assembly: InternalsVisibleToAttribute("lib.Xunit")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+[assembly: InternalsVisibleToAttribute("lib.Xunit")]        //Visibility for XUnit
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]  //visibility for Moq
 
 namespace Solution.Services {
-    using LectureObserver = IObserver<LectureTheatre>;
-    using LectureObservable = IObservable<LectureTheatre>;
     public class Top 
     {
         static void Main(String[] args) 
@@ -20,10 +17,6 @@ namespace Solution.Services {
             using (var container = new UnityContainer())
             {
                 ContainerBootstrapper.RegisterTypes(container);
-
-                /* container.Resolve<IProfessorUtils>().Initialize();
-                container.Resolve<IClassUtils>().Initialize(); */
-                //container.Resolve<IUnsubscriber>().Initialize();
 
                 var solution = container.Resolve<ISolution>();
                 StreamReader stdin = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding);
@@ -78,28 +71,4 @@ namespace Solution.Services {
         }
     }
     
-    public interface IScheduledClassFactory
-    {
-        IScheduledClass Create( int expectedClassSize, 
-                                int classCancellationThreshold);
-    }
-    public class ScheduledClassFactory : IScheduledClassFactory
-    {
-        private IClassUtils _ClassUtils;
-        public ScheduledClassFactory (IClassUtils classUtils)
-        {
-            _ClassUtils = classUtils;
-        }
-        public IScheduledClass Create( int expectedClassSize, 
-                                       int classCancellationThreshold)
-        {
-            var lesson = new LectureTheatre();
-            lesson.InitialiseStatistics(expectedClassSize:expectedClassSize, 
-                                        classCancellationThreshold:classCancellationThreshold);
-            return new ScheduledClass(lectureTheatre: lesson, 
-                                      classUtils:_ClassUtils);
-        }
-    }
-
-
 }

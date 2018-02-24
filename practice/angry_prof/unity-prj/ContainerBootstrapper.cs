@@ -1,28 +1,29 @@
 using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity;
-
+using Microsoft.Practices.Unity;
 
 namespace Solution.Services {
     public class ContainerBootstrapper
     {
         public static void RegisterTypes(IUnityContainer container)
         {
+            
+            /* container.RegisterTypes(
+                AllClasses.FromLoadedAssemblies(),
+                WithMappings.FromMatchingInterface,
+                WithName.Default); */
+
+            // Instance registration
+            container.RegisterInstance<IProfessorUtils>(new ProfessorUtils());
+            container.RegisterInstance<IClassUtils>(new ClassUtils());
+
+            // Register store types
             container.RegisterType<ISolution, Solution>();
-            //container.RegisterType<IProfessorUtils>(new ProfessorUtils());
             container.RegisterType<IProfessor, Professor>();
             container.RegisterType<IScheduledClass, ScheduledClass>();
-            container.RegisterType<IProfessorUtils, ProfessorUtils>();
-            container.RegisterType<IClassUtils, ClassUtils>();
-            container.RegisterType<IScheduledClassFactory, ScheduledClassFactory>();
-            /* .RegisterType<IUnsubscriber<Action>, UnsubscriberLambda<Action>>(
-                new InjectionConstructor(Action)); */
             container.RegisterType<IUnsubscriber, UnsubscriberLambda>();
+            container.RegisterType<IScheduledClassFactory, ScheduledClassFactory>();
 
-            
-//myContainer.RegisterType<CustomerData>(new ContainerControlledLifetimeManager());
         }
     }
 }    

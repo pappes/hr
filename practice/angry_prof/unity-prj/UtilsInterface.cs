@@ -1,12 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity;
-
-//allow unit testing project to have visibility into private memebers
-/* [assembly: InternalsVisibleToAttribute("lib.Xunit")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] */
 
 namespace Solution.Services {
     using LectureObserver = IObserver<LectureTheatre>;
