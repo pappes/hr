@@ -5,8 +5,9 @@ namespace Solution.Services {
     public class Solution : ISolution {
     //https://www.hackerrank.com/challenges/angry-professor/problem
         private readonly IProfessor _lessonObserver;        
-        //private readonly IScheduledClass _lessonProvider;
         private readonly IScheduledClassFactory _scheduledClassFactory;
+        private StreamReader _source;
+        private StreamWriter _destination;
 
         public Solution (IProfessor professor,
                          IScheduledClassFactory scheduledClassFactory) 
@@ -15,14 +16,16 @@ namespace Solution.Services {
             _scheduledClassFactory = scheduledClassFactory;
 
         }
-        public void TestHarness(StreamReader input, StreamWriter output) =>
+        public void TestHarness(StreamReader input, StreamWriter output) 
+        {
+            _source = input;
+            _destination = output;
             // Call actual logic.
             TimeLine(input, output);
+        }
 
         public void TimeLine(StreamReader source, StreamWriter destination) 
         {
-            //var lessonObserver = new Professor();
-        
             int t = Convert.ToInt32(source.ReadLine());
             for(int a0 = 0; a0 < t; a0++){
                 string[] tokens_n = source.ReadLine().Split(' ');

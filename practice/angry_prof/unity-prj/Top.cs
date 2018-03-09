@@ -15,14 +15,14 @@ namespace Solution.Services {
         // UnityContainer container;
             //unity dependency injection from https://msdn.microsoft.com/en-us/library/dn178463(v=pandp.30).aspx
             using (var container = new UnityContainer())
+            using (StreamReader stdin = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding))
+            using (StreamWriter stdout = new StreamWriter(Console.OpenStandardOutput()))
             {
                 ContainerBootstrapper.RegisterTypes(container);
 
+                //var solution = container.Resolve<ISolution>();
                 var solution = container.Resolve<ISolution>();
-                StreamReader stdin = new StreamReader(Console.OpenStandardInput(), Console.InputEncoding);
-                StreamWriter stdout = new StreamWriter(Console.OpenStandardOutput());
                 solution.TimeLine(stdin, stdout);
-                stdout.Flush();
             }
         }
     }
