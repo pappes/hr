@@ -1,0 +1,46 @@
+{
+   // Use IntelliSense to find out which attributes exist for C# debugging
+   // Use hover for the description of the existing attributes
+   // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+   "version": "0.2.0",
+   "configurations": [
+        {
+            "name": ".NET Core Launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceFolder}/practice/kangaroo/project/library/lib.Xunit/bin/Debug/netcoreapp2.0/lib.Xunit.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/practice/kangaroo/project/library/lib.Xunit",
+            // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": ".NET Core Launch (Manual)",
+            "type": "coreclr",
+            "request": "attach",
+            "preLaunchTask": "test",
+            // If you have changed target frameworks, make sure to update the program path.
+            //"program": "dotnet",
+            //"args": ["test", "${workspaceFolder}/practice/kangaroo/project/library/lib.Xunit/lib.Xunit.csproj"],
+            //"cwd": "${workspaceFolder}/practice/kangaroo/project/library/lib.Xunit",
+            // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window
+            //"console": "internalConsole",
+            //"stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            //"env": {
+            //    "VSTEST_HOST_DEBUG": "1"                
+            //},
+            "processId": "${command:pickProcess}"
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        }
+    ,]
+}

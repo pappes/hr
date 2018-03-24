@@ -28,6 +28,16 @@
                 "reveal": "always"
             },
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "testdebug",
+            "command": "cmd /c set VSTEST_HOST_DEBUG=1 & dotnet test ${fileDirname}",
+            "type": "shell",
+            "group": "test",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
         }
     ]
 }
