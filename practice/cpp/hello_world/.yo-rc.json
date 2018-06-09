@@ -1,0 +1,21 @@
+{
+  "generator-cpp": {
+    "projectName": "hw",
+    "projectDescription": "compiler test",
+    "projectPath": "CppProject",
+    "projectPackage": "hw-test",
+    "projectLicense": "MIT License",
+    "authorName": "pappes",
+    "authorEmail": "pappes@gmail.com",
+    "companyName": "pappes",
+    "companyId": "hack.pappes",
+    "companyWebsite": "www.company.com",
+    "buildSharedLib": false,
+    "buildStaticLib": false,
+    "buildUtility": true,
+    "buildTest": true,
+    "buildCodeCoverage": true,
+    "unitTestType": "gtest",
+    "buildDocumentation": true
+  }
+}
