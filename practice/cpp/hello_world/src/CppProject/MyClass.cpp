@@ -23,87 +23,83 @@ namespace cppproject
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-								MyClass::MyClass							( )
-								:	enum_(MyClass::MyEnum::First),
-									integer_(0),
-									string_("")
+MyClass::MyClass()
+	: enum_(MyClass::MyEnum::First),
+	  integer_(0),
+	  string_("")
 {
-
 }
 
-								MyClass::MyClass							(	const	MyClass::MyEnum&			anEnum,
-																				const	int&						anInteger,
-																				const	std::string&				aString								)
-								:	enum_(anEnum),
-									integer_(anInteger),
-									string_(aString)
+MyClass::MyClass(const MyClass::MyEnum &anEnum,
+				 const int &anInteger,
+				 const std::string &aString)
+	: enum_(anEnum),
+	  integer_(anInteger),
+	  string_(aString)
 {
-
 }
 
-bool							MyClass::operator ==						(	const	MyClass&					aMyClass							) const
+bool MyClass::operator==(const MyClass &aMyClass) const
 {
-	return (enum_ == aMyClass.enum_) && (integer_ == aMyClass.integer_) && (string_ == aMyClass.string_) ;
+	return (enum_ == aMyClass.enum_) && (integer_ == aMyClass.integer_) && (string_ == aMyClass.string_);
 }
 
-std::ostream&					operator <<									(			std::ostream&				anOutputStream,
-																				const	MyClass&					aMyClass							)
+std::ostream &operator<<(std::ostream &anOutputStream,
+						 const MyClass &aMyClass)
 {
 
-	anOutputStream																<<		"-- MyClass ----------------------------------------------------" << std::endl ;
+	anOutputStream << "-- MyClass ----------------------------------------------------" << std::endl;
 
-	anOutputStream																<<		"\tInteger:\t" << aMyClass.integer_ ;
-	anOutputStream																<<		"\tString:\t" << aMyClass.string_ ;
+	anOutputStream << "\tInteger:\t" << aMyClass.integer_;
+	anOutputStream << "\tString:\t" << aMyClass.string_;
 
-	anOutputStream																<<		"---------------------------------------------------------------" << std::endl ;
+	anOutputStream << "---------------------------------------------------------------" << std::endl;
 
-	return anOutputStream ;
-
+	return anOutputStream;
 }
 
-bool							MyClass::isDefined							( ) const
+bool MyClass::isDefined() const
 {
-	return integer_ > 0 ;
+	return integer_ > 0;
 }
 
-int								MyClass::getInteger							( ) const
+int MyClass::getInteger() const
 {
-	return integer_ ;
+	return integer_;
 }
 
-void							MyClass::setInteger							(	const	int&						anInteger							)
+void MyClass::setInteger(const int &anInteger)
 {
-	integer_																	=		anInteger ;
+	integer_ = anInteger;
 }
 
-void							MyClass::doSomething						( )
+void MyClass::doSomething()
 {
-	this->doSomethingPrivate() ;
+	this->doSomethingPrivate();
 }
 
-void							MyClass::printSomething						( )
+void MyClass::printSomething()
 {
-	std::cout																	<<		"Hello World!" << std::endl ;
+	std::cout << "Hello World!" << std::endl;
 }
 
-MyClass							MyClass::Integer							(	const	int&						anInteger							)
+MyClass MyClass::Integer(const int &anInteger)
 {
 
-	MyClass						myClass ;
+	MyClass myClass;
 
-	myClass.integer_															=		anInteger ;
+	myClass.integer_ = anInteger;
 
-	return myClass ;
-
+	return myClass;
 }
 
-void							MyClass::doSomethingPrivate					( )
+void MyClass::doSomethingPrivate()
 {
-	integer_																	=		integer_ * 2 ;
+	integer_ = integer_ * 2;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-}
+} // namespace cppproject
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
