@@ -1,0 +1,9 @@
+C:/Users/dj/Documents/GitHub/hr/practice/cpp/hello_world/CMakeFiles/libhw-test.so.dir
+C:/Users/dj/Documents/GitHub/hr/practice/cpp/hello_world/CMakeFiles/uninstall.dir
+C:/Users/dj/Documents/GitHub/hr/practice/cpp/hello_world/CMakeFiles/PACKAGE.dir
+C:/Users/dj/Documents/GitHub/hr/practice/cpp/hello_world/CMakeFiles/INSTALL.dir
+C:/Users/dj/Documents/GitHub/hr/practice/cpp/hello_world/CMakeFiles/ALL_BUILD.dir
+C:/Users/dj/Documents/GitHub/hr/practice/cpp/hello_world/CMakeFiles/ZERO_CHECK.dir
+C:/Users/dj/Documents/GitHub/hr/practice/cpp/hello_world/share/CppUtility/CMakeFiles/hw-test.exe.dir
+C:/Users/dj/Documents/GitHub/hr/practice/cpp/hello_world/share/CppUtility/CMakeFiles/PACKAGE.dir
+C:/Users/dj/Documents/GitHub/hr/practice/cpp/hello_world/share/CppUtility/CMakeFiles/INSTALL.dir

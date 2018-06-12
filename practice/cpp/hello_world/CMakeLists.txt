@@ -28,13 +28,17 @@ SET (PROJECT_VENDOR_URL "www.company.com")
 
 ## Project Options
 
-OPTION (BUILD_SHARED_LIBRARY "Build shared library." OFF)
+OPTION (BUILD_SHARED_LIBRARY "Build shared library." ON)
 OPTION (BUILD_STATIC_LIBRARY "Build static library." OFF)
 OPTION (BUILD_UTILITY "Build utility." ON)
 OPTION (BUILD_UNIT_TESTS "Build tests" ON)
 OPTION (BUILD_CODE_COVERAGE "Build code coverage" ON)
 OPTION (BUILD_DOCUMENTATION "Build documentation" ON)
 OPTION (INSTALL_DATA "Install data" ON)
+# TODO DH Hack SET (BUILD_SHARED_LIBRARY "ON") #because the option above results in the varioable being OFF
+SET (BUILD_UNIT_TESTS "OFF") #because the option above results in the varioable being ON
+SET (BUILD_CODE_COVERAGE "OFF") #because the option above results in the varioable being ON
+SET (BUILD_DOCUMENTATION "OFF") #because the option above results in the varioable being ON
 
 ########################################################################################################################################################
 
@@ -260,6 +264,7 @@ IF (BUILD_SHARED_LIBRARY)
 
     SET (SHARED_LIBRARY_NAME "${PROJECT_PACKAGE_NAME}")
     SET (SHARED_LIBRARY_TARGET "lib${SHARED_LIBRARY_NAME}.so")
+    #MESSAGE (STATUS "Real SHARED_LIBRARY_TARGET: ${SHARED_LIBRARY_TARGET}")
 
     FILE (GLOB_RECURSE SHARED_LIBRARY_HEADERS "${PROJECT_SOURCE_DIR}/include/${PROJECT_PATH}/*.hpp")
     FILE (GLOB_RECURSE SHARED_LIBRARY_SRCS "${PROJECT_SOURCE_DIR}/src/${PROJECT_PATH}/*.cpp")
